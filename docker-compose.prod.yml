@@ -12,7 +12,7 @@ services:
 
   api:
     container_name: api-server
-    image: lincenying/api-server:1.0.0
+    image: lincenying/api-server:1.25.0312
     environment:
       DATABASE_URL: mongodb://mongo:27017
     ports:
@@ -24,7 +24,7 @@ services:
 
   app:
     container_name: images-mmf-blog-vite-vue3-ssr
-    image: lincenying/images-mmf-blog-vite-vue3-ssr:1.0.1
+    image: lincenying/images-mmf-blog-vite-vue3-ssr:1.25.0312
     environment:
       API_URL: http://api:4000
     env_file:
@@ -38,7 +38,7 @@ services:
 
   nuxt:
     container_name: images-mmf-blog-vite-nuxt
-    image: lincenying/images-mmf-blog-vite-nuxt:1.0.2
+    image: lincenying/images-mmf-blog-vite-nuxt:1.25.0312
     environment:
       NUXT_ENV_API_URL: http://api:4000
     env_file:
@@ -60,6 +60,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx/conf.d2:/etc/nginx/conf.d
       - ./nginx/conf.d:/etc/nginx/conf.d
 
 networks:
