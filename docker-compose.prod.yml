@@ -1,10 +1,10 @@
 services:
   mongo:
     container_name: mongo-server
-    image: mongo:3.6
+    image: mongo:4.0
     restart: always
     volumes:
-      - /home/web/mongodb/data:/data/db
+      - /Users/lincenying/web/mongodb/data:/data/db
     ports:
       - 27017:27017
     networks:
@@ -31,6 +31,8 @@ services:
       - .env
     depends_on:
       - api
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
       - 7777:7777
     networks:
@@ -45,6 +47,8 @@ services:
       - .env
     depends_on:
       - api
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
       - 7200:7200
     networks:
@@ -55,7 +59,9 @@ services:
     container_name: nginx
     restart: always
     depends_on:
-      - api app nuxt
+      - api
+      - app
+      - nuxt
     ports:
       - "80:80"
       - "443:443"
@@ -64,6 +70,8 @@ services:
       - ./nginx/conf.d.alias:/etc/nginx/conf.d
       - ./nginx/cert:/etc/nginx/cert
       - ./web:/home/web
+    networks:
+      - webnet
 
 networks:
   webnet:
