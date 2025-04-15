@@ -1,8 +1,7 @@
 services:
   mongo:
-    container_name: mongo-server
+    container_name: dc-mongo-server
     image: mongo:4.0
-    restart: always
     volumes:
       - /Users/lincenying/web/mongodb/data:/data/db
     ports:
@@ -11,8 +10,8 @@ services:
       - webnet
 
   api:
-    container_name: api-server
-    image: lincenying/api-server:1.25.0312
+    container_name: dc-api-server
+    image: lincenying/api-server:1.25.0414
     environment:
       DATABASE_URL: mongodb://mongo:27017
     ports:
@@ -23,8 +22,8 @@ services:
       - webnet
 
   app:
-    container_name: images-mmf-blog-vite-vue3-ssr
-    image: lincenying/images-mmf-blog-vite-vue3-ssr:1.25.0312
+    container_name: dc-app-vue3-ssr
+    image: lincenying/images-mmf-blog-vite-vue3-ssr:1.25.0414
     environment:
       API_URL: http://api:4000
     env_file:
@@ -39,8 +38,8 @@ services:
       - webnet
 
   nuxt:
-    container_name: images-mmf-blog-vite-nuxt
-    image: lincenying/images-mmf-blog-vite-nuxt:1.25.0312
+    container_name: dc-app-nuxt
+    image: lincenying/images-mmf-blog-vite-nuxt:1.25.0414
     environment:
       NUXT_ENV_API_URL: http://api:4000
     env_file:
@@ -55,9 +54,8 @@ services:
       - webnet
 
   nginx:
+    container_name: dc-nginx
     image: nginx
-    container_name: nginx
-    restart: always
     depends_on:
       - api
       - app
