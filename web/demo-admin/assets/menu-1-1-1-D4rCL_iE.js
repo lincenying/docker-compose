@@ -1,0 +1,1 @@
+import{f as n,d as s,o as t,l as o,w as r,e as c,au as l}from"./vendor-tJYAkJng.js";const m={class:"menu-menu"},p=n({name:"Mneu111",__name:"menu-1-1-1",setup(_){return(u,e)=>{const a=l;return t(),s("div",m,[o(a,{class:"m-15px"},{default:r(()=>[...e[0]||(e[0]=[c("p",null,"我是四级导航菜单1-1-1",-1)])]),_:1})])}}});export{p as default};

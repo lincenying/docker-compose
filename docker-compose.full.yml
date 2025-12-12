@@ -1,0 +1,115 @@
+services:
+  mongo:
+    container_name: dc-mongo-server
+    image: mongo:4.0
+    volumes:
+      - /Users/lincenying/web/mongodb/data:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - webnet
+
+  mysql:
+    container_name: dc-mysql-db
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cyxiaowu
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./web/demo-php/mysql.sql:/home/mysql/mysql.sql
+      - /Users/lincenying/web/mysqldb:/var/lib/mysql
+    networks:
+      - webnet
+
+  api:
+    container_name: dc-api-server
+    image: lincenying/api-server:1.25.1029
+    environment:
+      DATABASE_URL: mongodb://mongo:27017
+    ports:
+      - 4008:4000
+    depends_on:
+      - mongo
+    networks:
+      - webnet
+
+  app:
+    container_name: dc-app-vue3-ssr
+    image: lincenying/images-mmf-blog-vite-vue3-ssr:1.25.1029
+    environment:
+      API_URL: http://api:4000
+    env_file:
+      - .env
+    depends_on:
+      - api
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 7777:7777
+    networks:
+      - webnet
+
+  nuxt:
+    container_name: dc-app-nuxt
+    image: lincenying/images-mmf-blog-vite-nuxt:1.25.1029
+    environment:
+      NUXT_ENV_API_URL: http://api:4000
+    env_file:
+      - .env
+    depends_on:
+      - api
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 7200:7200
+    networks:
+      - webnet
+
+  php-app:
+    container_name: dc-php-app-server
+    image: lincenying/php-app-server:${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./web/demo-php:/home/web/php-template
+    networks:
+      - webnet
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: cyxiaowu
+      DB_USERNAME: user
+      DB_PASSWORD: password
+    env_file:
+      - .env
+
+  nginx:
+    container_name: dc-nginx
+    image: nginx
+    depends_on:
+      - api
+      - app
+      - nuxt
+      - php-app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d.alias:/etc/nginx/conf.d
+      - ./nginx/cert:/etc/nginx/cert
+      - ./web:/home/web
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
