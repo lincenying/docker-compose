@@ -1,16 +1,16 @@
 services:
   mongo:
-    container_name: dc-mongo-server
+    container_name: dc-db-mongo
     image: mongo:4.0
     volumes:
-      - /Users/lincenying/web/mongodb/data:/data/db
+      - ${MONGO_DIR:-./data/mongodb}:/data/db
     ports:
       - 27017:27017
     networks:
       - webnet
 
   mysql:
-    container_name: dc-mysql-db
+    container_name: dc-db-mysql
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -22,13 +22,13 @@ services:
       - "3306:3306"
     volumes:
       - ./web/demo-php/mysql.sql:/home/mysql/mysql.sql
-      - /Users/lincenying/web/mysqldb:/var/lib/mysql
+      - ${MYSQL_DIR:-./data/mysqldb}:/var/lib/mysql
     networks:
       - webnet
 
   api:
-    container_name: dc-api-server
-    image: lincenying/api-server:${TAG}
+    container_name: dc-api-express
+    image: lincenying/api-express:${API_EXPRESS_TAG}
     environment:
       DATABASE_URL: mongodb://mongo:27017
     ports:
@@ -40,7 +40,7 @@ services:
 
   app:
     container_name: dc-app-vue3-ssr
-    image: lincenying/images-mmf-blog-vite-vue3-ssr:${TAG}
+    image: lincenying/app-vue3-ssr:${APP_VUE3_SSR_TAG}
     environment:
       API_URL: http://api:4000
     env_file:
@@ -56,7 +56,7 @@ services:
 
   nuxt:
     container_name: dc-app-nuxt
-    image: lincenying/images-mmf-blog-vite-nuxt:${TAG}
+    image: lincenying/app-nuxt:${APP_NUXT_TAG}
     environment:
       NUXT_ENV_API_URL: http://api:4000
     env_file:
@@ -70,14 +70,9 @@ services:
     networks:
       - webnet
 
-  php-app:
-    container_name: dc-php-app-server
-    image: lincenying/php-app-server:${TAG}
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./web/demo-php:/home/web/php-template
+  app-php:
+    container_name: dc-app-php
+    image: lincenying/app-php:${APP_PHP_TAG}
     networks:
       - webnet
     depends_on:
@@ -91,6 +86,16 @@ services:
     env_file:
       - .env
 
+  nginx_php:
+    container_name: dc-nginx-php
+    image: lincenying/nginx-php:${APP_PHP_TAG}
+    ports:
+      - "8084:80"
+    networks:
+      - webnet
+    depends_on:
+      - app-php
+
   nginx:
     container_name: dc-nginx
     image: nginx
@@ -98,7 +103,7 @@ services:
       - api
       - app
       - nuxt
-      - php-app
+      - app-php
     ports:
       - "80:80"
       - "443:443"

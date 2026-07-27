@@ -1,73 +1,99 @@
 # docker-compose
 
+多容器编排：Nginx 反代 + API + 前端（Vue3 SSR / Nuxt）+ 可选 PHP / 数据库。
+
+## 选择哪个 compose 文件
+
+| Compose 文件 | Nginx 配置目录 | 数据库 | 适用场景 |
+|---|---|---|---|
+| `docker-compose.yml` | `nginx/conf.d`（反代宿主机端口） | 无 | 仅启动 Nginx；后端需已在宿主机运行 |
+| `docker-compose.prod.yml` | `nginx/conf.d.alias` | Mongo | 生产：API + Vue/Nuxt（无 PHP） |
+| `docker-compose.full.yml` | `nginx/conf.d.alias` | Mongo + MySQL | 全栈：上者 + PHP |
+| `docker-compose.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
+| `docker-compose.full.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres + MySQL | Postgres 栈 + PHP |
+
+**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-server:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`api-bun-server-postgre:4080`）。compose 已按文件挂载对应目录。
+
+## 启动命令
+
 ```bash
-# 生成镜像及启动容器
-# 后端服务器一起启动
-docker-compose -f docker-compose.prod.yml up -d
+# 仅 Nginx（依赖宿主机上的后端端口）
+docker compose -f docker-compose.yml up -d
 
-# 只启动nginx服务
-docker-compose -f docker-compose.yml up -d
+# Mongo 栈（无 PHP）
+docker compose -f docker-compose.prod.yml up -d
+
+# Mongo + MySQL + PHP 全栈
+docker compose -f docker-compose.full.yml up -d
+
+# Postgres 栈（无 PHP）
+docker compose -f docker-compose.postgres.yml up -d
+
+# Postgres + MySQL + PHP 全栈
+docker compose -f docker-compose.full.postgres.yml up -d
 ```
 
-## 开启php项目
+## 域名与可达性
 
-### 复制项目
-将php项目代码复制到`./web/demo-php`目录下
+需将下列域名解析到服务器（或写入 `/etc/hosts`）。当前 SSL 未启用，请用 **HTTP :80** 访问。
 
-### 相关配置
-修改`docker-compose.full.yml`中的`mysql_db.volumes`配置, 将宿主机数据库路径映射到容器中, 可实现数据持久化
+| 域名 | prod / full (Mongo) | postgres / full.postgres | 仅 nginx (`conf.d`) |
+|---|---|---|---|
+| `api.test.com` | 可访问 → `dc-api-server:4000` | 可访问 → `api-bun-server-postgre:4080` | 需宿主机 `:4008` |
+| `www.test.com` | 可访问（SSR + `/api/`） | 可访问（SSR + `/api/`） | 需宿主机 `:7777` / `:4008` |
+| `nuxt.test.com` | 可访问 | 可访问 | 需宿主机 `:7200` |
+| `demo-web.test.com` / `demo-admin.test.com` | 静态可访问 | 静态可访问 | 静态可访问 |
+| `demo-h5.test.com` / `demo-uniapp.test.com` | 静态 + `/api/` | 静态 + `/api/` | 静态；`/api/` 需宿主机 `:4008` |
+| `php.test.com` | 仅 **full** / **full.postgres** | 仅 **full.postgres** | 不可用（无 app-php） |
+| `py.test.com` | 无（仅 `conf.d`） | 无 | 需宿主机 `:8006` |
 
-```yaml
-volumes:
-  - /Users/lincenying/web/mysqldb:/var/lib/mysql
+## 环境变量（`.env`）
+
+```bash
+API_POSTGRES_TAG=1.25.1029
+API_EXPRESS_TAG=1.25.1029
+APP_VUE3_SSR_TAG=1.25.1029
+APP_NUXT_TAG=1.25.1029
+APP_PHP_TAG=1.25.1029
+
+MONGO_DIR=/Users/lincenying/web/mongodb/data
+MYSQL_DIR=/Users/lincenying/web/mysqldb
+POSTGRES_DIR=/Users/lincenying/web/postgresql/data
+POSTGRES_PASSWORD=POSTGRESPassword
 ```
 
-修改`docker-compose.yml`中的相关配置
-```yaml
-# 给php用的
-DB_PORT: 3306
-DB_DATABASE: cyxiaowu
-DB_USERNAME: user
-DB_PASSWORD: password
+换机器部署时修改 `MONGO_DIR` / `MYSQL_DIR` / `POSTGRES_DIR`。未设置时默认分别为 `./data/mongodb`、`./data/mysqldb`、`/var/lib/postgresql`。
 
-# 给mysql用的, 上下得一一对应
+## 开启 PHP 项目
+
+### 数据库
+
+在 `.env` 中设置 `MYSQL_DIR`。`full` / `full.postgres` 中 MySQL 环境变量：
+
+```yaml
 MYSQL_ROOT_PASSWORD: rootpassword
 MYSQL_DATABASE: cyxiaowu
 MYSQL_USER: user
 MYSQL_PASSWORD: password
-
-# php应用映射到宿主机的端口
-webserver:
-  ports:
-    - '8084:80'
 ```
 
-根据情况自行修改`nginx/conf.d/php.conf`或者`nginx/conf.d.alias/php.conf`配置, 如果域名绑定, 端口号等
-nginx配置文件根据`docker-compose.*.yaml`文件中的
-```yaml
-nginx:
-  volumes:
-    - ./nginx/conf.d.alias:/etc/nginx/conf.d
-```
-来决定是使用`conf.d`还是`conf.d.alias`文件夹里的配置
+与 `app-php` 的 `DB_*` 保持一致。
 
-如果宿主机有数据库, 或者使用外部的数据库, 可以删除`docker-compose.yml`中`mysql_db`容器, 并修改`app/inc/settings.ini.php`中的数据库配置
+若使用外部数据库，可删除 compose 中的 `mysql` 服务，并改 PHP 应用内数据库配置。
+
+### 启动后初始化（full / full.postgres）
 
 ```bash
-# 生成镜像及启动容器
-# 后端服务器一起启动
-docker-compose -f docker-compose.full.yml up -d
-
-# 进入mysql_db容器
-docker exec -it mysql /bin/bash
-# 恢复mysql数据库
+# 进入 mysql 容器恢复数据（若有 ./web/demo-php/mysql.sql）
+docker exec -it dc-db-mysql /bin/bash
 mysql -uuser -p cyxiaowu < /home/mysql/mysql.sql
 
-# 进入php-app容器
-docker exec -it php-app /bin/bash
-# 安装composer依赖
-cd /home/web/php-template
-composer install --no-dev --no-scripts --no-autoloader
-composer dump-autoload --optimize
-
 ```
+
+## Nginx 配置说明
+
+- `nginx/conf.d`：反代 `host.docker.internal`（适合仅起 Nginx、后端在宿主机）。
+- `nginx/conf.d.alias`：反代 Docker 容器名（Mongo API `dc-api-server:4000`）。
+- `nginx/conf.d.alias.postgres`：反代 Postgres API `api-bun-server-postgre:4080`。
+
+证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。

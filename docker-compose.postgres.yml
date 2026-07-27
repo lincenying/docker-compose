@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: dc-postgres-server
+    container_name: dc-db-postgres
     image: postgres:18.4-alpine
     environment:
       POSTGRES_HOST: 0.0.0.0
@@ -27,8 +27,8 @@ services:
       - webnet
 
   api:
-    container_name: api-bun-server-postgre
-    image: lincenying/bun-api-server-postgre:${TAG}
+    container_name: dc-api-bun-postgre
+    image: lincenying/api-bun-postgre:${API_POSTGRES_TAG}
     env_file:
       - .env
     environment:
@@ -38,7 +38,7 @@ services:
     ports:
       - 4080:4080
     depends_on:
-      api_postgres:
+      postgres:
         condition: service_healthy
     volumes:
       - ./uploads:/app/uploads
@@ -48,7 +48,7 @@ services:
 
   app:
     container_name: dc-app-vue3-ssr
-    image: lincenying/images-mmf-blog-vite-vue3-ssr:${TAG}
+    image: lincenying/app-vue3-ssr:${APP_VUE3_SSR_TAG}
     environment:
       API_URL: http://api:4080
     env_file:
@@ -64,7 +64,7 @@ services:
 
   nuxt:
     container_name: dc-app-nuxt
-    image: lincenying/images-mmf-blog-vite-nuxt:${TAG}
+    image: lincenying/app-nuxt:${APP_NUXT_TAG}
     environment:
       NUXT_ENV_API_URL: http://api:4080
     env_file:
@@ -85,13 +85,12 @@ services:
       - api
       - app
       - nuxt
-      - php-app
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d.alias:/etc/nginx/conf.d
+      - ./nginx/conf.d.alias.postgres:/etc/nginx/conf.d
       - ./nginx/cert:/etc/nginx/cert
       - ./web:/home/web
     networks:
