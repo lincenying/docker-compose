@@ -70,7 +70,7 @@ services:
     networks:
       - webnet
 
-  app-php:
+  app_php:
     container_name: dc-app-php
     image: lincenying/app-php:${APP_PHP_TAG}
     networks:
@@ -94,16 +94,17 @@ services:
     networks:
       - webnet
     depends_on:
-      - app-php
+      - app_php
+    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
-    image: nginx
+    image: nginx:alpine
     depends_on:
       - api
       - app
       - nuxt
-      - app-php
+      - nginx_php
     ports:
       - "80:80"
       - "443:443"
@@ -114,6 +115,7 @@ services:
       - ./web:/home/web
     networks:
       - webnet
+    restart: unless-stopped
 
 networks:
   webnet:

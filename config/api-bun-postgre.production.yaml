@@ -1,0 +1,86 @@
+# ========================================
+# 应用配置
+# ========================================
+app:
+  # 应用程序名称
+  name: MMF Blog API
+  # 应用程序版本号
+  version: 1.0.0
+  # 应用程序描述
+  description: A modern web API built with Bun and ElysiaJS
+
+# ========================================
+# 服务器配置
+# ========================================
+server:
+  # Node.js 运行环境 (可选值: development, production, test)
+  nodeEnv: production
+  # 服务监听端口
+  port: 4080
+  # 服务绑定的主机地址
+  host: 0.0.0.0
+  # 外部访问端口（用于 Docker 环境）
+  externalPort: 4080
+  # 外部访问主机（用于 Docker 环境）
+  externalHost: 127.0.0.1
+
+# ========================================
+# 日志配置
+# ========================================
+log:
+  # 日志级别 (可选值: error, warn, info, debug, trace)
+  level: info
+
+# ========================================
+# CORS 配置
+# ========================================
+cors:
+  # 允许访问的源（支持多个域名用逗号分隔，或使用 * 表示所有源）
+  origin: '*'
+  # 是否允许携带凭证
+  credentials: true
+  # 允许的HTTP方法（需为数组，与镜像内原配置一致）
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+
+# ========================================
+# Swagger 文档配置
+# ========================================
+swagger:
+  # Swagger文档访问路径
+  path: /docs
+  # API文档标题
+  title: MMF Blog API
+  # API版本号
+  version: 1.0.0
+  # API描述信息
+  description: A modern web API built with Bun and ElysiaJS
+
+# ========================================
+# 静态文件配置
+# ========================================
+static:
+  # 静态资源文件路径
+  assetsPath: ./public
+  # 静态资源URL前缀
+  prefix: /public
+
+# MD5加密
+# 如用户的密码是 123456, 存到数据库将会变成 md5('!@#$%(*&^)' + '123456')
+# 数据库中有数据后, 请勿修改, 否则会造成原有用户不能登陆
+md5_salt: '!@#$%(*&^)'
+
+jwt:
+  expiresInSeconds: 2592000
+
+# =========================================
+# 数据库配置
+# =========================================
+db:
+  provider: postgresql
+  sqlite: ./.data/db.sqlite3
+  # compose 服务名，走 webnet；勿用 host.docker.internal（易打到宿主机其它 Postgres）
+  postgre_host: "postgres"
+  postgre_port: 5432
+  postgre_user: "postgres"
+  postgre_password: "POSTGRESPassword"
+  postgre_db: "mmfblog_v2"

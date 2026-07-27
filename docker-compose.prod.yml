@@ -55,7 +55,7 @@ services:
 
   nginx:
     container_name: dc-nginx
-    image: nginx
+    image: nginx:alpine
     depends_on:
       - api
       - app

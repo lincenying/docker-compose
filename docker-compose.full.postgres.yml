@@ -21,10 +21,10 @@ services:
     image: postgres:18.4-alpine
     environment:
       POSTGRES_HOST: 0.0.0.0
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRESPassword}
-      POSTGRES_DB: mmfblog_v2
+      POSTGRES_DB: ${POSTGRES_DB:-mmfblog_v2}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
@@ -32,14 +32,13 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U postgres -d mmfblog_v2
+        - pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mmfblog_v2}
       interval: 3s
       timeout: 5s
       retries: 20
       start_period: 10s
-    restart: unless-stopped
     ports:
-      - 5432:5432
+      - "${POSTGRES_PORT:-5432}:5432"
     networks:
       - webnet
 
@@ -50,6 +49,11 @@ services:
       - .env
     environment:
       NODE_ENV: production
+      POSTGRE_HOST: postgres
+      POSTGRE_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRE_USER: ${POSTGRES_USER:-postgres}
+      POSTGRE_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRESPassword}
+      POSTGRE_DB: ${POSTGRES_DB:-mmfblog_v2}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -60,8 +64,10 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./.data:/app/.data
+      - ./config/api-bun-postgre.production.yaml:/app/config/production.yaml:ro
     networks:
       - webnet
+    restart: unless-stopped
 
   app:
     container_name: dc-app-vue3-ssr
@@ -95,9 +101,10 @@ services:
     networks:
       - webnet
 
-  app-php:
+  app_php:
     container_name: dc-app-php
     image: lincenying/app-php:${APP_PHP_TAG}
+    # nginx-php 镜像 upstream 名为 app_php（下划线），需别名才能解析
     networks:
       - webnet
     depends_on:
@@ -119,16 +126,17 @@ services:
     networks:
       - webnet
     depends_on:
-      - app-php
+      - app_php
+    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
-    image: nginx
+    image: nginx:alpine
     depends_on:
       - api
       - app
       - nuxt
-      - app-php
+      - nginx_php
     ports:
       - "80:80"
       - "443:443"
@@ -139,6 +147,8 @@ services:
       - ./web:/home/web
     networks:
       - webnet
+    # API 未就绪时 upstream 解析失败会退出；重启后可恢复
+    restart: unless-stopped
 
 networks:
   webnet:
