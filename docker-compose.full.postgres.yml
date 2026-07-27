@@ -1,14 +1,4 @@
 services:
-  mongo:
-    container_name: dc-mongo-server
-    image: mongo:4.0
-    volumes:
-      - /Users/lincenying/web/mongodb/data:/data/db
-    ports:
-      - 27017:27017
-    networks:
-      - webnet
-
   mysql:
     container_name: dc-mysql-db
     image: mysql:8.0
@@ -26,15 +16,50 @@ services:
     networks:
       - webnet
 
-  api:
-    container_name: dc-api-server
-    image: lincenying/api-server:${TAG}
+  postgres:
+    container_name: dc-postgres-server
+    image: postgres:18.4-alpine
     environment:
-      DATABASE_URL: mongodb://mongo:27017
+      POSTGRES_HOST: 0.0.0.0
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: mmfblog_v2
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - ${POSTGRES_DIR:-/var/lib/postgresql}:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres -d mmfblog_v2
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
     ports:
-      - 4008:4000
+      - 5432:5432
+    networks:
+      - webnet
+
+  api:
+    container_name: api-bun-server-postgre
+    image: lincenying/bun-api-server-postgre:${TAG}
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 4080:4080
     depends_on:
-      - mongo
+      api_postgres:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+      - ./.data:/app/.data
     networks:
       - webnet
 
@@ -42,7 +67,7 @@ services:
     container_name: dc-app-vue3-ssr
     image: lincenying/images-mmf-blog-vite-vue3-ssr:${TAG}
     environment:
-      API_URL: http://api:4000
+      API_URL: http://api:4080
     env_file:
       - .env
     depends_on:
@@ -58,7 +83,7 @@ services:
     container_name: dc-app-nuxt
     image: lincenying/images-mmf-blog-vite-nuxt:${TAG}
     environment:
-      NUXT_ENV_API_URL: http://api:4000
+      NUXT_ENV_API_URL: http://api:4080
     env_file:
       - .env
     depends_on:
