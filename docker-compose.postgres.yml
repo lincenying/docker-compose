@@ -6,7 +6,7 @@ services:
       POSTGRES_HOST: 0.0.0.0
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRESPassword}
       POSTGRES_DB: mmfblog_v2
     extra_hosts:
       - 'host.docker.internal:host-gateway'

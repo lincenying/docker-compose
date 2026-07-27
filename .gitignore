@@ -29,3 +29,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+.cursor/rules/global*.mdc
+.qoder/rules/global*.mdc

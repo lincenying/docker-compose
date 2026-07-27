@@ -12,7 +12,7 @@
 | `docker-compose.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
 | `docker-compose.full.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres + MySQL | Postgres 栈 + PHP |
 
-**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-server:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`api-bun-server-postgre:4080`）。compose 已按文件挂载对应目录。
+**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-express:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`dc-api-bun-postgre:4080`）。compose 已按文件挂载对应目录。
 
 ## 启动命令
 
@@ -39,7 +39,7 @@ docker compose -f docker-compose.full.postgres.yml up -d
 
 | 域名 | prod / full (Mongo) | postgres / full.postgres | 仅 nginx (`conf.d`) |
 |---|---|---|---|
-| `api.test.com` | 可访问 → `dc-api-server:4000` | 可访问 → `api-bun-server-postgre:4080` | 需宿主机 `:4008` |
+| `api.test.com` | 可访问 → `dc-api-express:4000` | 可访问 → `dc-api-bun-postgre:4080` | 需宿主机 `:4008` |
 | `www.test.com` | 可访问（SSR + `/api/`） | 可访问（SSR + `/api/`） | 需宿主机 `:7777` / `:4008` |
 | `nuxt.test.com` | 可访问 | 可访问 | 需宿主机 `:7200` |
 | `demo-web.test.com` / `demo-admin.test.com` | 静态可访问 | 静态可访问 | 静态可访问 |
@@ -60,6 +60,11 @@ MONGO_DIR=/Users/lincenying/web/mongodb/data
 MYSQL_DIR=/Users/lincenying/web/mysqldb
 POSTGRES_DIR=/Users/lincenying/web/postgresql/data
 POSTGRES_PASSWORD=POSTGRESPassword
+
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=cyxiaowu
+MYSQL_USER=user
+MYSQL_PASSWORD=password
 ```
 
 换机器部署时修改 `MONGO_DIR` / `MYSQL_DIR` / `POSTGRES_DIR`。未设置时默认分别为 `./data/mongodb`、`./data/mysqldb`、`/var/lib/postgresql`。
@@ -68,23 +73,23 @@ POSTGRES_PASSWORD=POSTGRESPassword
 
 ### 数据库
 
-在 `.env` 中设置 `MYSQL_DIR`。`full` / `full.postgres` 中 MySQL 环境变量：
+在 `.env` 中设置 `MYSQL_DIR` 与 `MYSQL_*`。`mysql` 与 `app-php` 共用：
 
-```yaml
-MYSQL_ROOT_PASSWORD: rootpassword
-MYSQL_DATABASE: cyxiaowu
-MYSQL_USER: user
-MYSQL_PASSWORD: password
+```bash
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=cyxiaowu
+MYSQL_USER=user
+MYSQL_PASSWORD=password
 ```
 
-与 `app-php` 的 `DB_*` 保持一致。
+`app-php` 的 `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` 分别映射自 `MYSQL_DATABASE` / `MYSQL_USER` / `MYSQL_PASSWORD`。
 
 若使用外部数据库，可删除 compose 中的 `mysql` 服务，并改 PHP 应用内数据库配置。
 
 ### 启动后初始化（full / full.postgres）
 
 ```bash
-# 进入 mysql 容器恢复数据（若有 ./web/demo-php/mysql.sql）
+# 进入 mysql 容器恢复数据（若有 ./web/mysql.sql）
 docker exec -it dc-db-mysql /bin/bash
 mysql -uuser -p cyxiaowu < /home/mysql/mysql.sql
 
@@ -93,7 +98,7 @@ mysql -uuser -p cyxiaowu < /home/mysql/mysql.sql
 ## Nginx 配置说明
 
 - `nginx/conf.d`：反代 `host.docker.internal`（适合仅起 Nginx、后端在宿主机）。
-- `nginx/conf.d.alias`：反代 Docker 容器名（Mongo API `dc-api-server:4000`）。
-- `nginx/conf.d.alias.postgres`：反代 Postgres API `api-bun-server-postgre:4080`。
+- `nginx/conf.d.alias`：反代 Docker 容器名（Mongo API `dc-api-express:4000`）。
+- `nginx/conf.d.alias.postgres`：反代 Postgres API `dc-api-bun-postgre:4080`。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。
