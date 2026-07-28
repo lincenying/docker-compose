@@ -5,9 +5,9 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-cyxiaowu}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-database_name}
+      MYSQL_USER: ${MYSQL_USER:-MYSQL_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
     ports:
       - "3306:3306"
     volumes:
@@ -23,8 +23,8 @@ services:
       POSTGRES_HOST: 0.0.0.0
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRESPassword}
-      POSTGRES_DB: ${POSTGRES_DB:-mmfblog_v2}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
+      POSTGRES_DB: ${POSTGRES_DB:-database_name}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
@@ -32,7 +32,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mmfblog_v2}
+        - pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-database_name}
       interval: 3s
       timeout: 5s
       retries: 20
@@ -49,11 +49,11 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      POSTGRE_HOST: postgres
-      POSTGRE_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRE_USER: ${POSTGRES_USER:-postgres}
-      POSTGRE_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRESPassword}
-      POSTGRE_DB: ${POSTGRES_DB:-mmfblog_v2}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
+      POSTGRES_DB: ${POSTGRES_DB:-database_name}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -64,7 +64,7 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./.data:/app/.data
-      - ./config/api-bun-postgre.production.yaml:/app/config/production.yaml:ro
+      # - ./config/api-bun-postgre.production.yaml:/app/config/production.yaml:ro
     networks:
       - webnet
     restart: unless-stopped
@@ -112,9 +112,9 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_DATABASE: ${MYSQL_DATABASE:-cyxiaowu}
-      DB_USERNAME: ${MYSQL_USER:-user}
-      DB_PASSWORD: ${MYSQL_PASSWORD:-password}
+      DB_DATABASE: ${MYSQL_DATABASE:-database_name}
+      DB_USERNAME: ${MYSQL_USER:-MYSQL_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
     env_file:
       - .env
 

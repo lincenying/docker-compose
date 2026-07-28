@@ -1,5 +1,6 @@
 # ========================================
 # 应用配置
+# 可用环境变量 APP_NAME APP_VERSION APP_DESCRIPTION 覆盖
 # ========================================
 app:
   # 应用程序名称
@@ -11,6 +12,7 @@ app:
 
 # ========================================
 # 服务器配置
+# 可用环境变量 NODE_ENV PORT HOST EXTERNAL_APP_PORT EXTERNAL_APP_HOST 覆盖
 # ========================================
 server:
   # Node.js 运行环境 (可选值: development, production, test)
@@ -26,6 +28,7 @@ server:
 
 # ========================================
 # 日志配置
+# 可用环境变量 LOG_LEVEL 覆盖
 # ========================================
 log:
   # 日志级别 (可选值: error, warn, info, debug, trace)
@@ -33,6 +36,7 @@ log:
 
 # ========================================
 # CORS 配置
+# 可用环境变量 CORS_ORIGIN CORS_CREDENTIALS CORS_METHODS 覆盖
 # ========================================
 cors:
   # 允许访问的源（支持多个域名用逗号分隔，或使用 * 表示所有源）
@@ -44,6 +48,7 @@ cors:
 
 # ========================================
 # Swagger 文档配置
+# 可用环境变量 SWAGGER_PATH SWAGGER_TITLE SWAGGER_VERSION SWAGGER_DESCRIPTION 覆盖
 # ========================================
 swagger:
   # Swagger文档访问路径
@@ -57,6 +62,7 @@ swagger:
 
 # ========================================
 # 静态文件配置
+# 可用环境变量 STATIC_ASSETS_PATH STATIC_PREFIX 覆盖
 # ========================================
 static:
   # 静态资源文件路径
@@ -64,9 +70,12 @@ static:
   # 静态资源URL前缀
   prefix: /public
 
+# ========================================
 # MD5加密
 # 如用户的密码是 123456, 存到数据库将会变成 md5('!@#$%(*&^)' + '123456')
 # 数据库中有数据后, 请勿修改, 否则会造成原有用户不能登陆
+# 可用环境变量 MD5_SALT 覆盖
+# ========================================
 md5_salt: '!@#$%(*&^)'
 
 jwt:
@@ -74,13 +83,15 @@ jwt:
 
 # =========================================
 # 数据库配置
+# 可用环境变量 DB_PROVIDER SQLITE_DB_URL POSTGRES_HOST POSTGRES_PORT POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB 覆盖
 # =========================================
 db:
   provider: postgresql
   sqlite: ./.data/db.sqlite3
   # compose 服务名，走 webnet；勿用 host.docker.internal（易打到宿主机其它 Postgres）
+  # 记得同步修改.env.local
   postgre_host: "postgres"
   postgre_port: 5432
   postgre_user: "postgres"
-  postgre_password: "POSTGRESPassword"
-  postgre_db: "mmfblog_v2"
+  postgre_password: "POSTGRES_password"
+  postgre_db: "database_name"

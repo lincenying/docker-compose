@@ -16,21 +16,38 @@
 
 ## 启动命令
 
+推荐使用 `./dc.sh`（自动加载 `.env` + `.env.local`，兼容 5 个 compose 文件）：
+
+```bash
+./dc.sh                          # 交互菜单
+./dc.sh list                     # 查看可用 stack
+./dc.sh up nginx                 # 仅 Nginx
+./dc.sh up prod                  # Mongo 栈（无 PHP）
+./dc.sh up full                  # Mongo + MySQL + PHP
+./dc.sh up postgres              # Postgres 栈（无 PHP）
+./dc.sh up full.postgres         # Postgres + MySQL + PHP
+./dc.sh down full.postgres
+./dc.sh logs postgres
+./dc.sh ps full
+```
+
+也可直接使用 docker compose（需自行带上 env 文件）：
+
 ```bash
 # 仅 Nginx（依赖宿主机上的后端端口）
-docker compose -f docker-compose.yml up -d
+docker compose --env-file .env --env-file .env.local -f docker-compose.yml up -d
 
 # Mongo 栈（无 PHP）
-docker compose -f docker-compose.prod.yml up -d
+docker compose --env-file .env --env-file .env.local -f docker-compose.prod.yml up -d
 
 # Mongo + MySQL + PHP 全栈
-docker compose -f docker-compose.full.yml up -d
+docker compose --env-file .env --env-file .env.local -f docker-compose.full.yml up -d
 
 # Postgres 栈（无 PHP）
-docker compose -f docker-compose.postgres.yml up -d
+docker compose --env-file .env --env-file .env.local -f docker-compose.postgres.yml up -d
 
 # Postgres + MySQL + PHP 全栈
-docker compose -f docker-compose.full.postgres.yml up -d
+docker compose --env-file .env --env-file .env.local -f docker-compose.full.postgres.yml up -d
 ```
 
 ## 域名与可达性
@@ -47,39 +64,56 @@ docker compose -f docker-compose.full.postgres.yml up -d
 | `php.test.com` | 仅 **full** / **full.postgres** | 仅 **full.postgres** | 不可用（无 app-php） |
 | `py.test.com` | 无（仅 `conf.d`） | 无 | 需宿主机 `:8006` |
 
-## 环境变量（`.env`）
+## 环境变量
+
+- `.env`：镜像 tag 等可提交配置
+- `.env.local`：密码、数据目录等私密配置（已 gitignore；`./dc.sh` 会自动加载）
 
 ```bash
-API_POSTGRES_TAG=1.25.1029
-API_EXPRESS_TAG=1.25.1029
-APP_VUE3_SSR_TAG=1.25.1029
-APP_NUXT_TAG=1.25.1029
-APP_PHP_TAG=1.25.1029
+# .env
+API_EXPRESS_TAG=1.26.0727
+API_POSTGRES_TAG=1.26.0728
+APP_VUE3_SSR_TAG=1.26.0727
+APP_NUXT_TAG=1.26.0727
+APP_PHP_TAG=1.26.0727
 
-MONGO_DIR=/Users/lincenying/web/mongodb/data
-MYSQL_DIR=/Users/lincenying/web/mysqldb
-POSTGRES_DIR=/Users/lincenying/web/postgresql/data
-POSTGRES_PASSWORD=POSTGRESPassword
+# .env.local（示例）
+MONGO_DIR=mongodb数据库路径
+MYSQL_DIR=mysql数据库路径
+POSTGRES_DIR=postgresql数据库路径
 
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=cyxiaowu
-MYSQL_USER=user
-MYSQL_PASSWORD=password
+# 如果是初始化新的数据库, 密码可随意设置, 如果数据库路径已经有数据, 需设置成之前初始化时的密码
+POSTGRES_HOST=POSTGRES主机地址,默认值:postgres
+POSTGRES_PORT=POSTGRES主机端口,默认值:5432
+POSTGRES_DB=POSTGRES数据库名,默认值:database_name
+POSTGRES_USER=POSTGRES数据库用户名,默认值:postgres
+POSTGRES_PASSWORD=POSTGRES密码,默认值:POSTGRES_password
+
+MYSQL_ROOT_PASSWORD=mysqlroot密码,默认值:rootpassword
+MYSQL_DATABASE=mysql数据库名,默认值:database_name
+MYSQL_USER=mysql数据库用户名,默认值:MYSQL_user
+MYSQL_PASSWORD=mysql数据库密码,默认值:MYSQL_password
 ```
 
 换机器部署时修改 `MONGO_DIR` / `MYSQL_DIR` / `POSTGRES_DIR`。未设置时默认分别为 `./data/mongodb`、`./data/mysqldb`、`/var/lib/postgresql`。
+
+`POSTGRES_HOST` `POSTGRES_PORT` `POSTGRES_DB` `POSTGRES_USER` `POSTGRES_PASSWORD`
+`MYSQL_ROOT_PASSWORD` `MYSQL_DATABASE` `MYSQL_USER` `MYSQL_PASSWORD`
+未设置时, 默认值分别是:
+`postgres`, `5432`, `database_name`, `postgres`, `POSTGRES_password`,
+`rootpassword`, `database_name`, `MYSQL_user`, `MYSQL_password`
 
 ## 开启 PHP 项目
 
 ### 数据库
 
-在 `.env` 中设置 `MYSQL_DIR` 与 `MYSQL_*`。`mysql` 与 `app-php` 共用：
+在 `.env.local` 中设置 `MYSQL_DIR` 与 `MYSQL_*`。`mysql` 与 `app-php` 共用：
 
 ```bash
 MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=cyxiaowu
-MYSQL_USER=user
-MYSQL_PASSWORD=password
+MYSQL_DATABASE=database_name
+MYSQL_USER=MYSQL_user
+MYSQL_PASSWORD=MYSQL_password
 ```
 
 `app-php` 的 `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` 分别映射自 `MYSQL_DATABASE` / `MYSQL_USER` / `MYSQL_PASSWORD`。
@@ -91,7 +125,7 @@ MYSQL_PASSWORD=password
 ```bash
 # 进入 mysql 容器恢复数据（若有 ./web/mysql.sql）
 docker exec -it dc-db-mysql /bin/bash
-mysql -uuser -p cyxiaowu < /home/mysql/mysql.sql
+mysql -uuser -p database_name < /home/mysql/mysql.sql
 
 ```
 
