@@ -123,9 +123,9 @@ MYSQL_PASSWORD=MYSQL_password
 ### 启动后初始化（full / full.postgres）
 
 ```bash
-# 进入 mysql 容器恢复数据（若有 ./web/mysql.sql）
+# 进入 mysql 容器恢复数据（若有 ./web/mysql）
 docker exec -it dc-db-mysql /bin/bash
-mysql -uuser -p database_name < /home/mysql/mysql.sql
+mysql -uMYSQL_user -p database_name < /app/mysql/xxxx.sql
 
 ```
 
