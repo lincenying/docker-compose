@@ -1,0 +1,1 @@
+import{s as e}from"./axios-_O4hkBUP.js";function t(t,n){e.confirm(t,`提示`,{confirmButtonText:`确定`,cancelButtonText:`取消`,type:`warning`,showClose:!1,buttonSize:`small`,callback:e=>{n&&n instanceof Function&&e===`confirm`&&n()}})}export{t};

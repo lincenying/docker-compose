@@ -55,6 +55,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
       POSTGRES_DB: ${POSTGRES_DB:-database_name}
+      PORT: 4000
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -144,6 +145,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d.alias.postgres:/etc/nginx/conf.d
       - ./nginx/cong.d.php/php.alias.conf:/etc/nginx/conf.d/php.conf
+      - ./nginx/cong.d.php/demo-h5.alias.conf:/etc/nginx/conf.d/demo-h5.conf
+      - ./nginx/cong.d.php/demo-uniapp.alias.conf:/etc/nginx/conf.d/demo-uniapp.conf
       - ./nginx/cert:/etc/nginx/cert
       - ./web:/home/web
     networks:

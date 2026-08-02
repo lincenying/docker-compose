@@ -1,1 +1,0 @@
-import{f as s,A as c,J as p,d as u,o as i}from"./vendor-tJYAkJng.js";const h=s({name:"Redirect",inheritAttrs:!0,__name:"redirect",setup(_){const{currentRoute:t,replace:r}=c(),{params:a,query:n}=p(t),{path:e}=a,o=Array.isArray(e)?e.join("/"):e;return r({path:`/${o}`,query:n}),(m,d)=>(i(),u("div"))}});export{h as default};

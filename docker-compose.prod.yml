@@ -14,6 +14,7 @@ services:
     image: lincenying/api-express:${API_EXPRESS_TAG}
     environment:
       DATABASE_URL: mongodb://mongo:27017
+      PORT: 4000
     ports:
       - 4000:4000
     depends_on:

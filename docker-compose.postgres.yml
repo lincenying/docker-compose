@@ -38,6 +38,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
       POSTGRES_DB: ${POSTGRES_DB:-mmfblog_v2}
+      PORT: 4000
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
