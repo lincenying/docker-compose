@@ -15,7 +15,7 @@ services:
     environment:
       DATABASE_URL: mongodb://mongo:27017
     ports:
-      - 4008:4000
+      - 4000:4000
     depends_on:
       - mongo
     networks:
@@ -65,7 +65,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d.alias:/etc/nginx/conf.d
+      - ./nginx/conf.d.alias.express:/etc/nginx/conf.d
       - ./nginx/cert:/etc/nginx/cert
       - ./web:/home/web
     networks:

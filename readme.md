@@ -12,7 +12,7 @@
 | `docker-compose.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
 | `docker-compose.full.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres + MySQL | Postgres 栈 + PHP |
 
-**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-express:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`dc-api-bun-postgre:4080`）。compose 已按文件挂载对应目录。
+**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-express:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`dc-api-bun-postgre:4000`）。compose 已按文件挂载对应目录。
 
 ## 启动命令
 
@@ -56,11 +56,11 @@ docker compose --env-file .env --env-file .env.local -f docker-compose.full.post
 
 | 域名 | prod / full (Mongo) | postgres / full.postgres | 仅 nginx (`conf.d`) |
 |---|---|---|---|
-| `api.test.com` | 可访问 → `dc-api-express:4000` | 可访问 → `dc-api-bun-postgre:4080` | 需宿主机 `:4008` |
-| `www.test.com` | 可访问（SSR + `/api/`） | 可访问（SSR + `/api/`） | 需宿主机 `:7777` / `:4008` |
+| `api.test.com` | 可访问 → `dc-api-express:4000` | 可访问 → `dc-api-bun-postgre:4000` | 需宿主机 `:4000` |
+| `www.test.com` | 可访问（SSR + `/api/`） | 可访问（SSR + `/api/`） | 需宿主机 `:7777` / `:4000` |
 | `nuxt.test.com` | 可访问 | 可访问 | 需宿主机 `:7200` |
 | `demo-web.test.com` / `demo-admin.test.com` | 静态可访问 | 静态可访问 | 静态可访问 |
-| `demo-h5.test.com` / `demo-uniapp.test.com` | 静态 + `/api/` | 静态 + `/api/` | 静态；`/api/` 需宿主机 `:4008` |
+| `demo-h5.test.com` / `demo-uniapp.test.com` | 静态 + `/api/` | 静态 + `/api/` | 静态；`/api/` 需宿主机 `:4000` |
 | `php.test.com` | 仅 **full** / **full.postgres** | 仅 **full.postgres** | 不可用（无 app-php） |
 | `py.test.com` | 无（仅 `conf.d`） | 无 | 需宿主机 `:8006` |
 
@@ -71,9 +71,9 @@ docker compose --env-file .env --env-file .env.local -f docker-compose.full.post
 
 ```bash
 # .env
-API_EXPRESS_TAG=1.26.0727
-API_POSTGRES_TAG=1.26.0728
-APP_VUE3_SSR_TAG=1.26.0727
+API_EXPRESS_TAG=1.26.0728
+API_POSTGRES_TAG=1.26.0731
+APP_VUE3_SSR_TAG=1.26.0731
 APP_NUXT_TAG=1.26.0727
 APP_PHP_TAG=1.26.0727
 
@@ -133,6 +133,6 @@ mysql -uMYSQL_user -p database_name < /app/mysql/xxxx.sql
 
 - `nginx/conf.d`：反代 `host.docker.internal`（适合仅起 Nginx、后端在宿主机）。
 - `nginx/conf.d.alias`：反代 Docker 容器名（Mongo API `dc-api-express:4000`）。
-- `nginx/conf.d.alias.postgres`：反代 Postgres API `dc-api-bun-postgre:4080`。
+- `nginx/conf.d.alias.postgres`：反代 Postgres API `dc-api-bun-postgre:4000`。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。

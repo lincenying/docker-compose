@@ -18,11 +18,11 @@ server:
   # Node.js 运行环境 (可选值: development, production, test)
   nodeEnv: production
   # 服务监听端口
-  port: 4080
+  port: 4000
   # 服务绑定的主机地址
   host: 0.0.0.0
   # 外部访问端口（用于 Docker 环境）
-  externalPort: 4080
+  externalPort: 4000
   # 外部访问主机（用于 Docker 环境）
   externalHost: 127.0.0.1
 

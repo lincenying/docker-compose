@@ -41,6 +41,7 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     networks:
       - webnet
+    restart: unless-stopped
 
   api:
     container_name: dc-api-bun-postgre
@@ -57,7 +58,7 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
-      - 4080:4080
+      - 4000:4000
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,7 +74,7 @@ services:
     container_name: dc-app-vue3-ssr
     image: lincenying/app-vue3-ssr:${APP_VUE3_SSR_TAG}
     environment:
-      API_URL: http://api:4080
+      API_URL: http://api:4000
     env_file:
       - .env
     depends_on:
@@ -89,7 +90,7 @@ services:
     container_name: dc-app-nuxt
     image: lincenying/app-nuxt:${APP_NUXT_TAG}
     environment:
-      NUXT_ENV_API_URL: http://api:4080
+      NUXT_ENV_API_URL: http://api:4000
     env_file:
       - .env
     depends_on:
@@ -127,7 +128,6 @@ services:
       - webnet
     depends_on:
       - app_php
-    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
@@ -143,12 +143,11 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d.alias.postgres:/etc/nginx/conf.d
+      - ./nginx/cong.d.php/php.alias.conf:/etc/nginx/conf.d/php.conf
       - ./nginx/cert:/etc/nginx/cert
       - ./web:/home/web
     networks:
       - webnet
-    # API 未就绪时 upstream 解析失败会退出；重启后可恢复
-    restart: unless-stopped
 
 networks:
   webnet:

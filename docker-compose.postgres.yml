@@ -20,11 +20,11 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
-    restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     networks:
       - webnet
+    restart: unless-stopped
 
   api:
     container_name: dc-api-bun-postgre
@@ -41,7 +41,7 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
-      - 4080:4080
+      - 4000:4000
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,7 +57,7 @@ services:
     container_name: dc-app-vue3-ssr
     image: lincenying/app-vue3-ssr:${APP_VUE3_SSR_TAG}
     environment:
-      API_URL: http://api:4080
+      API_URL: http://api:4000
     env_file:
       - .env
     depends_on:
@@ -68,12 +68,13 @@ services:
       - 7777:7777
     networks:
       - webnet
+    restart: unless-stopped
 
   nuxt:
     container_name: dc-app-nuxt
     image: lincenying/app-nuxt:${APP_NUXT_TAG}
     environment:
-      NUXT_ENV_API_URL: http://api:4080
+      NUXT_ENV_API_URL: http://api:4000
     env_file:
       - .env
     depends_on:
@@ -84,6 +85,7 @@ services:
       - 7200:7200
     networks:
       - webnet
+    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
