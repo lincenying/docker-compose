@@ -9,10 +9,10 @@
 | `docker-compose.yml` | `nginx/conf.d`（反代宿主机端口） | 无 | 仅启动 Nginx；后端需已在宿主机运行 |
 | `docker-compose.prod.yml` | `nginx/conf.d.alias` | Mongo | 生产：API + Vue/Nuxt（无 PHP） |
 | `docker-compose.full.yml` | `nginx/conf.d.alias` | Mongo + MySQL | 全栈：上者 + PHP |
-| `docker-compose.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
-| `docker-compose.full.postgres.yml` | `nginx/conf.d.alias.postgres` | Postgres + MySQL | Postgres 栈 + PHP |
+| `docker-compose.postgres.yml` | `nginx/conf.d.alias` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
+| `docker-compose.full.postgres.yml` | `nginx/conf.d.alias` | Postgres + MySQL | Postgres 栈 + PHP |
 
-**不要混用**：Mongo 栈用 `conf.d.alias`（`dc-api-express:4000`）；Postgres 栈用 `conf.d.alias.postgres`（`dc-api-bun-postgre:4000`）。compose 已按文件挂载对应目录。
+> Docker Desktop（virtiofs）下：若目录挂载后再叠加单文件挂载，目标文件必须已存在于宿主机目录，否则会报 `mountpoint is outside of rootfs`。`full` / `full.postgres` 的 PHP 叠加挂载依赖 `php.conf` / `demo-h5.conf` / `demo-uniapp.conf` 占位文件。
 
 ## 启动命令
 
@@ -132,7 +132,8 @@ mysql -uMYSQL_user -p database_name < /app/mysql/xxxx.sql
 ## Nginx 配置说明
 
 - `nginx/conf.d`：反代 `host.docker.internal`（适合仅起 Nginx、后端在宿主机）。
-- `nginx/conf.d.alias`：反代 Docker 容器名（Mongo API `dc-api-express:4000`）。
-- `nginx/conf.d.alias.postgres`：反代 Postgres API `dc-api-bun-postgre:4000`。
+- `nginx/conf.d.alias`：反代 Docker 服务名（Mongo/Express 栈）。
+- `nginx/conf.d.alias`：反代 Docker 服务名（Postgres 栈）。
+- `nginx/conf.d.php`：PHP 相关站点配置；`full*` 通过文件挂载叠加到上述 alias 目录。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。

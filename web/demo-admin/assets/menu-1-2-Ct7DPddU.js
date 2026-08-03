@@ -1,1 +1,0 @@
-import"./rolldown-runtime-hePW80VL.js";import{Lt as e,Pt as t,Rt as n,ct as r,jt as i,qt as a,rn as o}from"./vendor-BpCGuBr7.js";var s={class:`menu-menu`},c=n({name:`Mneu12`,__name:`menu-1-2`,setup(n){return(n,c)=>{let l=r;return a(),t(`div`,s,[e(l,{class:`m-15px`},{default:o(()=>[...c[0]||(c[0]=[i(`p`,null,`我是三级导航菜单1-2`,-1)])]),_:1})])}}});export{c as default};

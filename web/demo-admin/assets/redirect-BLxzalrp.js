@@ -1,1 +1,0 @@
-import{Pt as e,Rt as t,dn as n,p as r,qt as i}from"./vendor-BpCGuBr7.js";var a=t({name:`Redirect`,inheritAttrs:!0,__name:`redirect`,setup(t){let{currentRoute:a,replace:o}=r(),{params:s,query:c}=n(a),{path:l}=s;return o({path:`/${Array.isArray(l)?l.join(`/`):l}`,query:c}),(t,n)=>(i(),e(`div`))}});export{a as default};

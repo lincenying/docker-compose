@@ -1,0 +1,1 @@
+import{T as e,Tt as t,U as n,x as r}from"./vue.runtime.esm-bundler-CVDFKh45.js";import{a as i}from"./index-Cv8yeLMl.js";var a=e({name:`Redirect`,inheritAttrs:!0,__name:`redirect`,setup(e){let{currentRoute:a,replace:o}=i(),{params:s,query:c}=t(a),{path:l}=s;return o({path:`/${Array.isArray(l)?l.join(`/`):l}`,query:c}),(e,t)=>(n(),r(`div`))}});export{a as default};
