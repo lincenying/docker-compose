@@ -1,3 +1,11 @@
+## 2026-08-04 11:03:33
+
+- 重命名 `docker-compose.prod.yml` → `docker-compose.mongo.yml`
+- 重命名 `docker-compose.full.yml` → `docker-compose.full.mongo.yml`
+- 同步更新 `dc.sh` stack 别名（`mongo` / `full.mongo`，兼容旧别名 `prod` / `full`）与 README
+
+commit message: `refactor: Mongo 栈 compose 文件按数据库命名`
+
 ## 2026-08-04 10:57:20
 
 - 按服务功能统一各 compose 的 `restart` 策略：数据库 / API / SSR / PHP / Nginx 均使用 `unless-stopped`

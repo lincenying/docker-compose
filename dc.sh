@@ -7,7 +7,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 # 展示顺序（菜单用）
-STACK_ORDER="nginx prod full postgres full.postgres"
+STACK_ORDER="nginx mongo full.mongo postgres full.postgres"
 
 usage() {
   cat <<'EOF'
@@ -27,14 +27,14 @@ usage() {
 
 Stack 别名:
   nginx | default              -> docker-compose.yml
-  prod                         -> docker-compose.prod.yml
-  full                         -> docker-compose.full.yml
+  mongo | mg                   -> docker-compose.mongo.yml
+  full.mongo | full-mg         -> docker-compose.full.mongo.yml
   postgres | pg                -> docker-compose.postgres.yml
   full.postgres | full-pg      -> docker-compose.full.postgres.yml
 
 示例:
   ./dc.sh up full.postgres
-  ./dc.sh down prod
+  ./dc.sh down mongo
   ./dc.sh logs postgres
   ./dc.sh restart full-pg api
   ./dc.sh                        # 交互菜单
@@ -44,8 +44,8 @@ EOF
 stack_desc() {
   case "$1" in
     nginx) echo "仅 Nginx（反代宿主机端口）" ;;
-    prod) echo "Mongo + API + Vue/Nuxt（无 PHP）" ;;
-    full) echo "Mongo + MySQL + PHP 全栈" ;;
+    mongo) echo "Mongo + API + Vue/Nuxt（无 PHP）" ;;
+    full.mongo) echo "Mongo + MySQL + PHP 全栈" ;;
     postgres) echo "Postgres + API + Vue/Nuxt（无 PHP）" ;;
     full.postgres) echo "Postgres + MySQL + PHP 全栈" ;;
     *) echo "" ;;
@@ -64,10 +64,10 @@ resolve_compose_file() {
 
   case "$stack" in
     nginx|default) file="docker-compose.yml" ;;
-    prod) file="docker-compose.prod.yml" ;;
-    full) file="docker-compose.full.yml" ;;
+    mongo|mg) file="docker-compose.mongo.yml" ;;
+    full.mongo|full-mg) file="docker-compose.full.mongo.yml" ;;
     postgres|pg) file="docker-compose.postgres.yml" ;;
-    full.postgres|full-pg|full_postgres) file="docker-compose.full.postgres.yml" ;;
+    full.postgres|full-pg) file="docker-compose.full.postgres.yml" ;;
     *)
       if [ -f "$stack" ]; then
         file="$stack"
@@ -93,7 +93,7 @@ resolve_compose_file() {
 
 is_known_stack() {
   case "$1" in
-    nginx|default|prod|full|postgres|pg|full.postgres|full-pg|full_postgres) return 0 ;;
+    nginx|default|mongo|full.mongo|full-mg|postgres|pg|full.postgres|full-pg) return 0 ;;
     *) return 1 ;;
   esac
 }
