@@ -1,3 +1,17 @@
+## 2026-08-04 11:18:31
+
+- 重构 `dc.sh` 交互选择：改用全局变量 `PICKED_*` 返回结果，不再用 `$(...)` / `eval`
+- 消除 `syntax error near unexpected token fi` 隐患，并保证选 `q` 能真正退出
+
+commit message: `fix: 重构 dc.sh 交互菜单避免子 shell 语法问题`
+
+## 2026-08-04 11:12:15
+
+- 修复 `./dc.sh` 交互菜单不显示：菜单改输出到 stderr，避免被 `$(...)` 吞掉
+- 修复交互选 `q` 无法真正退出：`$(...)` 内 `exit` 只结束子 shell，改为哨兵 `__QUIT__` 由调用方退出
+
+commit message: `fix: 修复 dc.sh 交互菜单显示与退出`
+
 ## 2026-08-04 11:03:33
 
 - 重命名 `docker-compose.prod.yml` → `docker-compose.mongo.yml`

@@ -65,9 +65,9 @@ resolve_compose_file() {
   case "$stack" in
     nginx|default) file="docker-compose.yml" ;;
     mongo|mg) file="docker-compose.mongo.yml" ;;
-    full.mongo|full-mg) file="docker-compose.full.mongo.yml" ;;
+    full.mongo|full-mg|full_mongo) file="docker-compose.full.mongo.yml" ;;
     postgres|pg) file="docker-compose.postgres.yml" ;;
-    full.postgres|full-pg) file="docker-compose.full.postgres.yml" ;;
+    full.postgres|full-pg|full_postgres) file="docker-compose.full.postgres.yml" ;;
     *)
       if [ -f "$stack" ]; then
         file="$stack"
@@ -93,7 +93,7 @@ resolve_compose_file() {
 
 is_known_stack() {
   case "$1" in
-    nginx|default|mongo|full.mongo|full-mg|postgres|pg|full.postgres|full-pg) return 0 ;;
+    nginx|default|mongo|mg|full.mongo|full-mg|full_mongo|postgres|pg|full.postgres|full-pg|full_postgres) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -124,6 +124,7 @@ run_compose() {
 }
 
 pick_stack_interactive() {
+  # 结果写入 PICKED_STACK；选 q 时 exit（必须在主 shell 调用，勿用 $()）
   echo
   echo "请选择要操作的 stack:"
   local i=1
@@ -140,6 +141,8 @@ pick_stack_interactive() {
   total=$(echo "$STACK_ORDER" | wc -w | tr -d ' ')
   read -r -p "输入序号 [1]: " choice || true
   choice="${choice:-1}"
+  # 去掉首尾空白，避免误输入空格
+  choice="$(printf '%s' "$choice" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 
   if [ "$choice" = "q" ] || [ "$choice" = "Q" ]; then
     exit 0
@@ -156,10 +159,20 @@ pick_stack_interactive() {
   fi
 
   set -- $STACK_ORDER
-  eval "echo \${$choice}"
+  i=1
+  for key in "$@"; do
+    if [ "$i" -eq "$choice" ]; then
+      PICKED_STACK="$key"
+      return 0
+    fi
+    i=$((i + 1))
+  done
+  echo "无效选择: ${choice}" >&2
+  exit 1
 }
 
 pick_command_interactive() {
+  # 结果写入 PICKED_CMD；选 q 时 exit（必须在主 shell 调用，勿用 $()）
   echo
   echo "请选择操作:"
   echo "  1) up        启动（后台）"
@@ -174,13 +187,14 @@ pick_command_interactive() {
   local choice
   read -r -p "输入序号 [1]: " choice || true
   choice="${choice:-1}"
+  choice="$(printf '%s' "$choice" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
   case "$choice" in
-    1) echo up ;;
-    2) echo down ;;
-    3) echo restart ;;
-    4) echo ps ;;
-    5) echo logs ;;
-    6) echo pull ;;
+    1) PICKED_CMD=up ;;
+    2) PICKED_CMD=down ;;
+    3) PICKED_CMD=restart ;;
+    4) PICKED_CMD=ps ;;
+    5) PICKED_CMD=logs ;;
+    6) PICKED_CMD=pull ;;
     q|Q) exit 0 ;;
     *)
       echo "无效选择: ${choice}" >&2
@@ -199,8 +213,10 @@ main() {
   fi
 
   if [ -z "$cmd" ]; then
-    stack="$(pick_stack_interactive)"
-    cmd="$(pick_command_interactive)"
+    pick_stack_interactive
+    stack="$PICKED_STACK"
+    pick_command_interactive
+    cmd="$PICKED_CMD"
   else
     case "$cmd" in
       help|-h|--help)
@@ -216,7 +232,8 @@ main() {
         if [ -n "$stack" ]; then
           shift
         else
-          stack="$(pick_stack_interactive)"
+          pick_stack_interactive
+          stack="$PICKED_STACK"
         fi
         ;;
       *)
