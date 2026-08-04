@@ -8,6 +8,7 @@ services:
       - 27017:27017
     networks:
       - webnet
+    restart: unless-stopped
 
   api:
     container_name: dc-api-express
@@ -21,6 +22,7 @@ services:
       - mongo
     networks:
       - webnet
+    restart: unless-stopped
 
   app:
     container_name: dc-app-vue3-ssr
@@ -37,6 +39,7 @@ services:
       - 7777:7777
     networks:
       - webnet
+    restart: unless-stopped
 
   nuxt:
     container_name: dc-app-nuxt
@@ -53,6 +56,7 @@ services:
       - 7200:7200
     networks:
       - webnet
+    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
@@ -71,6 +75,7 @@ services:
       - ./web:/home/web
     networks:
       - webnet
+    restart: unless-stopped
 
 networks:
   webnet:

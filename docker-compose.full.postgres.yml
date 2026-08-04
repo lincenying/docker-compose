@@ -15,6 +15,7 @@ services:
       - ${MYSQL_DIR:-./data/mysqldb}:/var/lib/mysql
     networks:
       - webnet
+    restart: unless-stopped
 
   postgres:
     container_name: dc-db-postgres
@@ -86,6 +87,7 @@ services:
       - 7777:7777
     networks:
       - webnet
+    restart: unless-stopped
 
   nuxt:
     container_name: dc-app-nuxt
@@ -102,6 +104,7 @@ services:
       - 7200:7200
     networks:
       - webnet
+    restart: unless-stopped
 
   app_php:
     container_name: dc-app-php
@@ -119,6 +122,7 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
     env_file:
       - .env
+    restart: unless-stopped
 
   nginx_php:
     container_name: dc-nginx-php
@@ -129,6 +133,7 @@ services:
       - webnet
     depends_on:
       - app_php
+    restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
@@ -149,6 +154,7 @@ services:
       - ./web:/home/web
     networks:
       - webnet
+    restart: unless-stopped
 
 networks:
   webnet:

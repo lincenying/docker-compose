@@ -1,3 +1,11 @@
+## 2026-08-04 10:57:20
+
+- 按服务功能统一各 compose 的 `restart` 策略：数据库 / API / SSR / PHP / Nginx 均使用 `unless-stopped`
+- `docker-compose.yml` 中 nginx 由 `always` 调整为 `unless-stopped`，与其余栈一致
+- `docker-compose.postgres.yml` 已齐全，无需改动
+
+commit message: `chore: 统一各服务 restart 策略为 unless-stopped`
+
 ## 2026-08-03 09:27:41
 
 - 修复 `full.postgres` 启动 `dc-nginx` 失败：Docker Desktop virtiofs 在「目录挂载 + 单文件叠加」时要求目标文件已存在，于 `conf.d.alias` 补齐 `php.conf`、`demo-h5.conf`、`demo-uniapp.conf` 占位文件
