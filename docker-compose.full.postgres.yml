@@ -109,7 +109,6 @@ services:
   app_php:
     container_name: dc-app-php
     image: lincenying/app-php:${APP_PHP_TAG}
-    # nginx-php 镜像 upstream 名为 app_php（下划线），需别名才能解析
     networks:
       - webnet
     depends_on:
