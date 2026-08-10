@@ -1,3 +1,18 @@
+## 2026-08-10 15:56:15
+
+- 修复 `anti-scan-php.inc`：`if` 正则中的 `$` 被当成变量导致 `invalid condition`
+- 改为 `map` 拆分 `$is_scanner_uri` / `$is_php_probe`，PHP 站点仅跳过 `.php` 拦截
+
+commit message: `fix: 修复 anti-scan-php 因 $ 变量解析导致的 nginx 配置错误`
+
+## 2026-08-10 15:51:04
+
+- 防扫描 URI 规则补充：`.php` / `.asp(x)` / `.ashx` / `wp-*` / `xmlrpc` / `.git` / `.rar|.zip|.gz`
+- PHP 站点改用 `anti-scan-php.inc`，避免拦截合法 `.php` 业务请求
+- 同步更新 fail2ban `nginx-scanner` 过滤规则
+
+commit message: `feat: 扩展 nginx 漏洞扫描路径拦截规则`
+
 ## 2026-08-10 14:27:49
 
 - 将其余 compose（`yml` / `mongo` / `postgres` / `full.mongo`）同步接入 fail2ban 与 nginx 日志挂载

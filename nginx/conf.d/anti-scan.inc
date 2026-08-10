@@ -5,6 +5,10 @@ if ($is_scanner_uri) {
     return 444;
 }
 
+if ($is_php_probe) {
+    return 444;
+}
+
 if ($is_bad_bot) {
     return 444;
 }

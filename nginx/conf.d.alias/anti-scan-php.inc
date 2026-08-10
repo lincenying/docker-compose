@@ -1,11 +1,7 @@
-# 在 server 块内 include：拦截扫描并限流
-# include /etc/nginx/conf.d/anti-scan.inc;
+# PHP 站点专用：不拦截 .php（否则业务不可用），其余扫描规则与限流仍生效
+# include /etc/nginx/conf.d/anti-scan-php.inc;
 
 if ($is_scanner_uri) {
-    return 444;
-}
-
-if ($is_php_probe) {
     return 444;
 }
 
