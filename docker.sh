@@ -27,3 +27,7 @@ docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/lincenying/app-vue
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/lincenying/nginx-php:1.26.0727
 docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/lincenying/nginx-php:1.26.0727 lincenying/nginx-php:1.26.0727
 docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/lincenying/nginx-php:1.26.0727
+
+docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/crazymax/fail2ban:1.1.0
+docker tag  swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/crazymax/fail2ban:1.1.0 crazymax/fail2ban:1.1.0
+docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/crazymax/fail2ban:1.1.0

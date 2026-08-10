@@ -19,6 +19,11 @@ template/default/cache
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+nginx/logs/*
+!nginx/logs/.gitkeep
+
+# fail2ban runtime
+fail2ban/db/
 
 # Editor directories and files
 .project

@@ -1,3 +1,18 @@
+## 2026-08-10 14:27:49
+
+- 将其余 compose（`yml` / `mongo` / `postgres` / `full.mongo`）同步接入 fail2ban 与 nginx 日志挂载
+- `nginx/conf.d` 同步防扫描配置，保证仅 Nginx 栈同样生效
+
+commit message: `feat: 各 compose 统一接入 nginx 防扫描防火墙`
+
+## 2026-08-10 13:44:13
+
+- 为 `full.postgres` 的 nginx 增加防恶意扫描防护：URI/UA 拦截、限流、IP 黑名单
+- 新增 `fail2ban` 服务（与 nginx 共享网络命名空间），按访问日志自动 iptables 封禁
+- 相关配置：`nginx/conf.d.alias/000-security-*.conf`、`anti-scan.inc`、`fail2ban/`
+
+commit message: `feat: 为 nginx 增加防恶意扫描防火墙`
+
 ## 2026-08-04 11:18:31
 
 - 重构 `dc.sh` 交互选择：改用全局变量 `PICKED_*` 返回结果，不再用 `$(...)` / `eval`

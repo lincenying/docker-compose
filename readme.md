@@ -137,3 +137,12 @@ mysql -uMYSQL_user -p database_name < /app/mysql/xxxx.sql
 - `nginx/conf.d.php`：PHP 相关站点配置；`full*` 通过文件挂载叠加到上述 alias 目录。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。
+
+### 防恶意扫描
+
+各 compose（含仅 Nginx）均为 Nginx 启用双层防护：
+
+1. **Nginx 应用层**：`conf.d` / `conf.d.alias` 中的 `000-security-http.conf` + `anti-scan.inc` 拦截常见扫描路径/恶意 UA，并做请求限流；手工黑名单见 `000-blocked-ips.conf`。
+2. **fail2ban**：`dc-fail2ban` 与 `dc-nginx` 共享网络命名空间，根据访问日志用 iptables 封禁扫描 IP；规则在 `fail2ban/`。
+
+查看封禁：`docker exec dc-fail2ban fail2ban-client status nginx-scanner`

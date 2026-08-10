@@ -72,9 +72,30 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d.alias:/etc/nginx/conf.d
       - ./nginx/cert:/etc/nginx/cert
+      - ./nginx/logs:/var/log/nginx
       - ./web:/home/web
     networks:
       - webnet
+    restart: unless-stopped
+
+  # 与 nginx 共享网络命名空间，通过 iptables 封禁恶意扫描 IP
+  fail2ban:
+    container_name: dc-fail2ban
+    image: crazymax/fail2ban:1.1.0
+    network_mode: "service:nginx"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      TZ: Asia/Shanghai
+      F2B_LOG_TARGET: STDOUT
+      F2B_LOG_LEVEL: INFO
+      F2B_DB_PURGE_AGE: 7d
+    volumes:
+      - ./nginx/logs:/var/log/nginx:ro
+      - ./fail2ban:/data
+    depends_on:
+      - nginx
     restart: unless-stopped
 
 networks:
