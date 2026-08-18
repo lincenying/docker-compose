@@ -19,7 +19,7 @@ services:
 
   postgres:
     container_name: dc-db-postgres
-    image: postgres:18.4-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_HOST: 0.0.0.0
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
