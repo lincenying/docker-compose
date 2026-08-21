@@ -1,3 +1,13 @@
+## 2026-08-21 15:08:01
+
+- 抽出公共反代参数 `proxy-params.inc`：HTTP/1.1 keepalive + WebSocket 升级、超时与缓冲、隐藏后端指纹、拒绝客户端伪造的 `X-Forwarded-*` / `Proxy`
+- 新增 `000-upstreams.conf` 上游连接池（`conf.d` 走 `host.docker.internal`，`conf.d.alias` 走 compose service name）；PHP 上游仅写在 `conf.d.php` 以免非 full 栈启动失败
+- 未知 Host 的 default server 改为直接 `444`；`php.conf` 补上 `anti-scan-php.inc`
+- `nginx.conf` 开启 `tcp_nopush`/`tcp_nodelay`、`gzip_proxied`，并为 JSON 等反代响应启用压缩
+- README 补充上游连接池与公共反代参数说明
+
+commit message: `perf: 优化 nginx 反向代理效率与转发安全`
+
 ## 2026-08-10 15:56:15
 
 - 修复 `anti-scan-php.inc`：`if` 正则中的 `$` 被当成变量导致 `invalid condition`
