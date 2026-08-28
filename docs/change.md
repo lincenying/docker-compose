@@ -1,3 +1,10 @@
+## 2026-08-27 12:47:59
+
+- Nginx 全局 `client_max_body_size` 调整为 20m，PHP 站点同步为 20M
+- full 栈（mongo / postgres）将 `config/php.ini` 只读挂载到 PHP 容器，与 Nginx 请求体上限对齐（`upload_max_filesize` / `post_max_size` 均为 20M）
+
+commit message: `chore: 统一 nginx 与 PHP 请求体上限为 20M`
+
 ## 2026-08-21 15:08:01
 
 - 抽出公共反代参数 `proxy-params.inc`：HTTP/1.1 keepalive + WebSocket 升级、超时与缓冲、隐藏后端指纹、拒绝客户端伪造的 `X-Forwarded-*` / `Proxy`

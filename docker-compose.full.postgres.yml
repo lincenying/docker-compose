@@ -121,6 +121,8 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
     env_file:
       - .env
+    volumes:
+      - ./config/php.ini:/usr/local/etc/php/php.ini:ro
     restart: unless-stopped
 
   nginx_php:
