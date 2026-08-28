@@ -1,3 +1,11 @@
+## 2026-08-28 09:30:53
+
+- 按生产栈收紧 `config/php.ini`：关闭 `expose_php`、禁用 `.user.ini`、时区 `Asia/Shanghai`、错误输出到容器 stderr
+- Session：`use_strict_mode` / `cookie_httponly` / `cookie_samesite=Lax`（HTTPS 未启用，未开 `cookie_secure`）
+- 明确 OPcache 与 realpath 缓存，适配镜像内代码、靠重建发布
+
+commit message: `chore: 按生产环境收紧 php.ini 安全与 OPcache`
+
 ## 2026-08-27 12:47:59
 
 - Nginx 全局 `client_max_body_size` 调整为 20m，PHP 站点同步为 20M
