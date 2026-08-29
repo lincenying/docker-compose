@@ -100,6 +100,8 @@ services:
     image: lincenying/nginx-php:${APP_PHP_TAG}
     ports:
       - "8084:80"
+    volumes:
+      - ./nginx/nginx-php/00-real-ip.conf:/etc/nginx/conf.d/00-real-ip.conf:ro
     networks:
       - webnet
     depends_on:

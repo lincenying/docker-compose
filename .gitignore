@@ -36,3 +36,4 @@ fail2ban/db/
 *.sw*
 .cursor/rules/global*.mdc
 .qoder/rules/global*.mdc
+data/*

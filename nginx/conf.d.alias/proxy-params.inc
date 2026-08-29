@@ -2,7 +2,8 @@
 # include /etc/nginx/conf.d/proxy-params.inc;
 #
 # 效率：HTTP/1.1 + 空 Connection 复用上游 keepalive；有 Upgrade 时自动切 WebSocket
-# 安全：不信任客户端 X-Forwarded-*；去掉 Proxy 头（httpoxy）；隐藏后端指纹
+# 安全：X-Real-IP / X-Forwarded-For 使用 real_ip 还原后的 $remote_addr（见 000-real-ip.conf），
+#       不把客户端原始转发头原样传给后端；去掉 Proxy 头（httpoxy）；隐藏后端指纹
 
 proxy_http_version 1.1;
 proxy_redirect off;
