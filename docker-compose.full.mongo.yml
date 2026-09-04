@@ -133,7 +133,7 @@ services:
   # 与 nginx 共享网络命名空间，通过 iptables 封禁恶意扫描 IP
   fail2ban:
     container_name: dc-fail2ban
-    image: crazymax/fail2ban:1.1.0
+    image: crazymax/fail2ban:1
     network_mode: "service:nginx"
     cap_add:
       - NET_ADMIN
