@@ -1,3 +1,12 @@
+## 2026-10-10 11:10:08
+
+- `docker-images.sh` 改为按 stack 传参拉取镜像，别名与 `dc.sh` 一致（`nginx` / `mongo` / `full.mongo` / `postgres` / `full.postgres` / `all`）
+- 镜像列表由对应 compose 解析得到，业务镜像 tag 读取 `.env`；仍从华为云镜像源拉取后打回本地标签
+- 官方镜像浮动标签沿用原固定版本：`fail2ban:1`、`mysql:8.0`、`postgres:18-alpine`、`nginx:alpine`；`docker-compose.yml` 的 `nginx` 对应 `nginx:1.31.6`
+- `list` 只打印将要拉取的镜像，不下载；未出现在 compose 中的 `api-bun-mongodb` 不再默认拉取
+
+commit message: `feat: docker-images.sh 按 stack 拉取对应 compose 镜像`
+
 ## 2026-08-28 09:30:53
 
 - 按生产栈收紧 `config/php.ini`：关闭 `expose_php`、禁用 `.user.ini`、时区 `Asia/Shanghai`、错误输出到容器 stderr

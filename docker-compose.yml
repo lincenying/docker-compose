@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx
+    image: nginx:alpine
     container_name: dc-nginx
     restart: unless-stopped
     ports:
