@@ -1,3 +1,10 @@
+## 2026-10-10 14:54:14
+
+- 将 `web/mysql` 重命名为 `web/sql`
+- compose 挂载、`restore-db.sh`、README 与目录说明同步改为 `web/sql`；容器内挂载点仍为 `/app/mysql`、`/app/postgresql`
+
+commit message: `refactor: 将 web/mysql 重命名为 web/sql`
+
 ## 2026-10-10 14:46:06
 
 - 新增 `restore-db.sh`：把 `web/mysql/mysql.sql` 恢复到 `dc-db-mysql`，把 `web/mysql/postgre.sql` 恢复到 `dc-db-postgres`

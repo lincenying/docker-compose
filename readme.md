@@ -122,7 +122,7 @@ MYSQL_PASSWORD=MYSQL_password
 
 ### 启动后初始化
 
-把 SQL 放到 `web/mysql/`：`mysql.sql` 恢复到 `dc-db-mysql`，`postgre.sql` 恢复到 `dc-db-postgres`。库名和密码读取正在运行的容器环境变量。
+把 SQL 放到 `web/sql/`：`mysql.sql` 恢复到 `dc-db-mysql`，`postgre.sql` 恢复到 `dc-db-postgres`。库名和密码读取正在运行的容器环境变量。
 
 ```bash
 ./restore-db.sh              # 恢复目录里存在的 SQL

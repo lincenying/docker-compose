@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# 将 web/mysql/mysql.sql、web/mysql/postgre.sql 恢复到对应数据库容器
+# 将 web/sql/mysql.sql、web/sql/postgre.sql 恢复到对应数据库容器
 # 兼容 macOS 自带 Bash 3.2
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
-SQL_DIR="web/mysql"
+SQL_DIR="web/sql"
 MYSQL_SQL="${SQL_DIR}/mysql.sql"
 POSTGRES_SQL="${SQL_DIR}/postgre.sql"
 MYSQL_CONTAINER="dc-db-mysql"
@@ -19,7 +19,7 @@ usage() {
   ./restore-db.sh mysql           只恢复 MySQL
   ./restore-db.sh postgres        只恢复 PostgreSQL
 
-SQL 文件（放在 web/mysql/）:
+SQL 文件（放在 web/sql/）:
   mysql.sql     -> 容器 dc-db-mysql
   postgre.sql   -> 容器 dc-db-postgres
 

@@ -22,7 +22,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./web/mysql:/app/mysql
+      - ./web/sql:/app/mysql
       - ${MYSQL_DIR:-./data/mysqldb}:/var/lib/mysql
     networks:
       - webnet

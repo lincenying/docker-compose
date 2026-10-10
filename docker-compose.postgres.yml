@@ -12,6 +12,7 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - ${POSTGRES_DIR:-/var/lib/postgresql}:/var/lib/postgresql
+      - ./web/sql:/app/postgresql
     healthcheck:
       test:
         - CMD-SHELL
