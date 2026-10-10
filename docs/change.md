@@ -1,3 +1,11 @@
+## 2026-10-10 14:46:06
+
+- 新增 `restore-db.sh`：把 `web/mysql/mysql.sql` 恢复到 `dc-db-mysql`，把 `web/mysql/postgre.sql` 恢复到 `dc-db-postgres`
+- 库名和密码优先使用正在运行容器的环境变量，导入前等待数据库就绪并补齐目标库
+- README 与 `web/mysql/readme.txt` 改为使用该脚本恢复
+
+commit message: `feat: 增加 mysql 与 postgres SQL 恢复脚本`
+
 ## 2026-10-10 11:10:08
 
 - `docker-images.sh` 改为按 stack 传参拉取镜像，别名与 `dc.sh` 一致（`nginx` / `mongo` / `full.mongo` / `postgres` / `full.postgres` / `all`）

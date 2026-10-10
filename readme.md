@@ -120,13 +120,14 @@ MYSQL_PASSWORD=MYSQL_password
 
 若使用外部数据库，可删除 compose 中的 `mysql` 服务，并改 PHP 应用内数据库配置。
 
-### 启动后初始化（full.mongo / full.postgres）
+### 启动后初始化
+
+把 SQL 放到 `web/mysql/`：`mysql.sql` 恢复到 `dc-db-mysql`，`postgre.sql` 恢复到 `dc-db-postgres`。库名和密码读取正在运行的容器环境变量。
 
 ```bash
-# 进入 mysql 容器恢复数据（若有 ./web/mysql）
-docker exec -it dc-db-mysql /bin/bash
-mysql -uMYSQL_user -p database_name < /app/mysql/xxxx.sql
-
+./restore-db.sh              # 恢复目录里存在的 SQL
+./restore-db.sh mysql        # 只恢复 MySQL（full.mongo / full.postgres）
+./restore-db.sh postgres     # 只恢复 PostgreSQL（postgres / full.postgres）
 ```
 
 ## Nginx 配置说明
