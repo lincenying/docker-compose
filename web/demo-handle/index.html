@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>汉兜 - 汉字 Wordle</title>
+  <meta name="description" content="汉兜 - 汉字 Wordle">
+  <meta property="og:image" content="https://handle.antfu.me/og.png"/>
+  <meta property="og:title" content="汉兜"/>
+  <meta property="og:description" content="汉兜 - 汉字 Wordle"/>
+  <meta name="twitter:image" content="https://handle.antfu.me/og.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:creator" content="antfu7"/>
+  <script type="module" crossorigin src="/assets/index-66bfb518.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-97fb1b86.js">
+  <link rel="modulepreload" crossorigin href="/assets/polyphones-26b479ab.js">
+  <link rel="modulepreload" crossorigin href="/assets/idioms-214673c7.js">
+  <link rel="modulepreload" crossorigin href="/assets/locale-08ac2eec.js">
+  <link rel="stylesheet" href="/assets/index-4080897c.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    (function() {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const setting = localStorage.getItem('color-schema') || 'auto'
+      if (setting === 'dark' || (prefersDark && setting !== 'light'))
+        document.documentElement.classList.toggle('dark', true)
+    })()
+  </script>
+  
+</body>
+</html>
