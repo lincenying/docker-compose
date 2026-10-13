@@ -1,3 +1,10 @@
+## 2026-10-13 17:18:20
+
+- 复制 `nginx` 为 `nginx-release`，站点域名由 `*.test.com` 改为 `*.mmxiaowu.com`
+- 带 SSL 注释的站点开启 HTTPS：`listen 443 ssl`，证书使用腾讯云 `_bundle.crt` / `.key`，HTTP 跳转到 HTTPS；阿里云证书段保持注释
+
+commit message: `feat: 新增 nginx-release 并启用腾讯云 HTTPS`
+
 ## 2026-10-10 14:54:14
 
 - 将 `web/mysql` 重命名为 `web/sql`
