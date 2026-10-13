@@ -191,10 +191,102 @@ restore_postgres() {
       -c "CREATE DATABASE ${POSTGRES_DB}"
   fi
 
+  # Navicat 会先单独 DROP/CREATE identity 序列，列仍占用该序列时 DROP 会失败；
+  # 建表里的 GENERATED AS IDENTITY 会再建同名序列，末尾的 OWNED BY 也不能改 identity 序列属主。
+  # 因此去掉这段前置序列定义，以及对应的 ALTER SEQUENCE ... OWNED BY。
+  pause_postgres_api
+  trap resume_postgres_api EXIT
+  reset_postgres_public
+
   echo "==> 恢复 ${POSTGRES_SQL} -> ${POSTGRES_CONTAINER} / ${POSTGRES_DB}"
-  docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" \
-    psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" < "$POSTGRES_SQL"
+  filter_postgres_identity_sequences "$POSTGRES_SQL" \
+    | docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" \
+      psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"
   echo "PostgreSQL 恢复完成"
+}
+
+# 暂停正在跑的 API，避免恢复过程中 Drizzle 把 public 表再建回来
+pause_postgres_api() {
+  local running paused
+  paused_postgres_api=0
+  running="$(docker inspect -f '{{.State.Running}}' dc-api-bun-postgre 2>/dev/null || true)"
+  paused="$(docker inspect -f '{{.State.Paused}}' dc-api-bun-postgre 2>/dev/null || true)"
+  if [ "$running" = "true" ] && [ "$paused" != "true" ]; then
+    echo "暂停 dc-api-bun-postgre，避免恢复期间改写数据库..."
+    docker pause dc-api-bun-postgre
+    paused_postgres_api=1
+  fi
+}
+
+resume_postgres_api() {
+  if [ "${paused_postgres_api:-0}" -eq 1 ]; then
+    docker unpause dc-api-bun-postgre >/dev/null 2>&1 || true
+    paused_postgres_api=0
+  fi
+}
+
+reset_postgres_public() {
+  echo "清空 ${POSTGRES_DB} 的 public schema..."
+  docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" \
+    psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<'SQL'
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = current_database()
+  AND pid <> pg_backend_pid();
+DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+GRANT ALL ON SCHEMA public TO CURRENT_USER;
+SQL
+}
+
+# 去掉与 GENERATED AS IDENTITY 冲突的前置序列定义（Navicat）
+filter_postgres_identity_sequences() {
+  awk '
+    FNR == NR {
+      if ($0 ~ /^CREATE TABLE "/) {
+        table = $0
+        sub(/^CREATE TABLE "[^"]+"\."/, "", table)
+        sub(/".*/, "", table)
+      }
+      if ($0 ~ /GENERATED[[:space:]]+(BY[[:space:]]+DEFAULT|ALWAYS)[[:space:]]+AS[[:space:]]+IDENTITY/) {
+        col = $0
+        sub(/^[[:space:]]*"/, "", col)
+        sub(/".*/, "", col)
+        if (table != "" && col != "") {
+          ident[table "_" col "_seq"] = 1
+        }
+      }
+      next
+    }
+    /^DROP SEQUENCE IF EXISTS "/ {
+      seq = $0
+      sub(/^DROP SEQUENCE IF EXISTS "[^"]+"\."/, "", seq)
+      sub(/".*/, "", seq)
+      if (seq in ident) {
+        skip = 1
+        next
+      }
+    }
+    skip && /^ALTER SEQUENCE / && /OWNER TO/ {
+      skip = 0
+      next
+    }
+    skip { next }
+    /^ALTER SEQUENCE "/ {
+      seq = $0
+      sub(/^ALTER SEQUENCE "[^"]+"\."/, "", seq)
+      sub(/".*/, "", seq)
+      if (seq in ident) {
+        if (getline nextline <= 0) next
+        if (nextline ~ /OWNED BY/) next
+        print
+        print nextline
+        next
+      }
+    }
+    { print }
+  ' "$1" "$1"
 }
 
 main() {

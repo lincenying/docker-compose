@@ -1,3 +1,10 @@
+## 2026-10-13 18:06:37
+
+- `restore-db.sh` 恢复 PostgreSQL 前清空 `public` schema，并暂停 `dc-api-bun-postgre`，避免已有 identity 列挡住导入
+- 跳过 Navicat 导出里与 `GENERATED AS IDENTITY` 冲突的前置 `DROP/CREATE SEQUENCE`，以及随后的 `ALTER SEQUENCE ... OWNED BY`，修复 `genealogy_id_seq` 无法删除或改属主的错误
+
+commit message: `fix: 修复 PostgreSQL 恢复时 identity 序列无法删除`
+
 ## 2026-10-13 17:18:20
 
 - 复制 `nginx` 为 `nginx-release`，站点域名由 `*.test.com` 改为 `*.mmxiaowu.com`
