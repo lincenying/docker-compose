@@ -37,7 +37,7 @@ Stack 别名:
   ./dc.sh down mongo
   ./dc.sh logs postgres
   ./dc.sh restart full-pg api
-  ./dc.sh up full-pg -d api      # 启动 full-pg 并后台运行 api 容器
+  ./dc.sh up full-pg -d api nginx      # 启动/重启 full-pg 并后台运行 api 和 nginx 容器, 会重新读取版本号
   ./dc.sh                        # 交互菜单
 EOF
 }
