@@ -120,6 +120,9 @@ services:
       DB_DATABASE: ${MYSQL_DATABASE:-database_name}
       DB_USERNAME: ${MYSQL_USER:-MYSQL_user}
       DB_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
+      QINIU_ACCESS_KEY: ${QINIU_ACCESS_KEY:-}
+      QINIU_SECRET_KEY: ${QINIU_SECRET_KEY:-}
+      UPLOAD_TOKEN: ${UPLOAD_TOKEN:-}
     env_file:
       - .env
     volumes:

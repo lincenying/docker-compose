@@ -93,6 +93,10 @@ MYSQL_ROOT_PASSWORD=mysqlroot密码,默认值:rootpassword
 MYSQL_DATABASE=mysql数据库名,默认值:database_name
 MYSQL_USER=mysql数据库用户名,默认值:MYSQL_user
 MYSQL_PASSWORD=mysql数据库密码,默认值:MYSQL_password
+
+QINIU_ACCESS_KEY=七牛AccessKey
+QINIU_SECRET_KEY=七牛SecretKey
+UPLOAD_TOKEN=本地上传接口的token
 ```
 
 换机器部署时修改 `MONGO_DIR` / `MYSQL_DIR` / `POSTGRES_DIR`。未设置时默认分别为 `./data/mongodb`、`./data/mysqldb`、`/var/lib/postgresql`。
