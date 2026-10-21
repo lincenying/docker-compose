@@ -1,3 +1,9 @@
+## 2026-10-21 15:35:50
+
+- `full.mongo` / `full.postgres` 的 `app_php` 启动时把挂载的 `upload` 交给 `www-data` 可写，避免绑定目录为 `root:root 755` 时无法建子目录、上传失败
+
+commit message: `fix: 让 PHP 上传目录对 www-data 可写`
+
 ## 2026-10-13 18:06:37
 
 - `restore-db.sh` 恢复 PostgreSQL 前清空 `public` schema，并暂停 `dc-api-bun-postgre`，避免已有 identity 列挡住导入
