@@ -1,3 +1,20 @@
+## 2026-10-22 11:38:19
+
+- full 栈去掉 `nginx_php`：入口 Nginx 直接 FastCGI 到 `app_php:9000`，不再多一次 HTTP 反代，也不再发布 `8084`
+- `app_php` 与入口 Nginx 共用卷 `php-app` 提供站点文件；上传目录仍挂 `./php-update`，Nginx 只读
+- PHP 镜像把代码放在 `/opt/app-php`，启动时同步到运行目录，避免共享卷一直用第一次拷进去的旧代码
+
+commit message: `perf: 入口 Nginx 直接连接 PHP-FPM`
+
+## 2026-10-22 11:11:12
+
+- PHP 镜像入口接管 `upload` 目录权限，`full.postgres` / `full.mongo` 不再用启动命令包一层 `chown`/`chmod`
+- `app_php` 增加 9000 端口健康检查，并等 MySQL 就绪后再启动；`nginx_php` 等 PHP-FPM 就绪
+- 镜像侧：Nginx 改为 `1.31.6-alpine`，启用 OPcache 并补上生产 php.ini 片段、FPM ondemand、敏感目录拒绝访问，请求体上限与全量栈对齐为 20M
+- `config/php.ini` 关闭 `cgi.fix_pathinfo`，避免 Nginx 把不存在的路径交给 PHP
+
+commit message: `perf: 优化 PHP 镜像启动与 Nginx 配置`
+
 ## 2026-10-21 15:35:50
 
 - `full.mongo` / `full.postgres` 的 `app_php` 启动时把挂载的 `upload` 交给 `www-data` 可写，避免绑定目录为 `root:root 755` 时无法建子目录、上传失败

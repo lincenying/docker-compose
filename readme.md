@@ -140,7 +140,7 @@ MYSQL_PASSWORD=MYSQL_password
 - `nginx/conf.d.alias`：反代 Docker 服务名（Mongo/Express 栈）。
 - `nginx/conf.d.alias`：反代 Docker 服务名（Postgres 栈）。
 - `nginx/conf.d.php`：PHP 相关站点配置；`full*` 通过文件挂载叠加到上述 alias 目录。
-- 反代公共参数：`proxy-params.inc`；上游连接池：`000-upstreams.conf`（`upstream_api` / `upstream_nuxt` / `upstream_app` / `upstream_python`）。PHP 上游定义在 `conf.d.php` 内，避免非 full 栈因 `nginx_php` 无法解析而启动失败。
+- 反代公共参数：`proxy-params.inc`；上游连接池：`000-upstreams.conf`（`upstream_api` / `upstream_nuxt` / `upstream_app` / `upstream_python`）。full 栈的 PHP 由 `conf.d.php/php.alias.conf` 直接 FastCGI 到 `app_php`，站点文件与 PHP 容器共用卷 `php-app`。单独跑 Nginx 时仍用 `conf.d.php/php.conf` 反代到宿主机 `8084`。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。
 

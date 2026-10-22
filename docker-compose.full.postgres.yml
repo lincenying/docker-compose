@@ -13,6 +13,12 @@ services:
     volumes:
       - ./web/sql:/app/mysql
       - ${MYSQL_DIR:-./data/mysqldb}:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     networks:
       - webnet
     restart: unless-stopped
@@ -113,7 +119,8 @@ services:
     networks:
       - webnet
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
@@ -126,33 +133,30 @@ services:
     env_file:
       - .env
     volumes:
+      - php-app:/home/web/app-php
       - ./config/php.ini:/usr/local/etc/php/php.ini:ro
       - ./php-update:/home/web/app-php/upload
-    # 宿主机目录挂进来后常为 root:root 755，www-data 无法建子目录
-    command: ["sh", "-c", "chown www-data:www-data /home/web/app-php/upload 2>/dev/null || true; su -s /bin/sh www-data -c 'test -w /home/web/app-php/upload' || chmod 777 /home/web/app-php/upload; exec php-fpm"]
-    restart: unless-stopped
-
-  nginx_php:
-    container_name: dc-nginx-php
-    image: lincenying/nginx-php:${APP_PHP_TAG}
-    ports:
-      - "8084:80"
-    volumes:
-      - ./nginx/nginx-php/00-real-ip.conf:/etc/nginx/conf.d/00-real-ip.conf:ro
-    networks:
-      - webnet
-    depends_on:
-      - app_php
+    # 代码在入口脚本里从 /opt/app-php 同步到共享卷；上传目录权限也由该入口处理
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9000'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   nginx:
     container_name: dc-nginx
     image: nginx:alpine
     depends_on:
-      - api
-      - app
-      - nuxt
-      - nginx_php
+      api:
+        condition: service_started
+      app:
+        condition: service_started
+      nuxt:
+        condition: service_started
+      app_php:
+        condition: service_healthy
     ports:
       - "80:80"
       - "443:443"
@@ -163,6 +167,8 @@ services:
       - ./nginx/cert:/etc/nginx/cert
       - ./nginx/logs:/var/log/nginx
       - ./web:/home/web
+      - php-app:/home/web/app-php:ro
+      - ./php-update:/home/web/app-php/upload:ro
     networks:
       - webnet
     restart: unless-stopped
@@ -186,6 +192,9 @@ services:
     depends_on:
       - nginx
     restart: unless-stopped
+
+volumes:
+  php-app:
 
 networks:
   webnet:
