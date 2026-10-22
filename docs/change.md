@@ -1,3 +1,9 @@
+## 2026-10-22 14:28:31
+
+- `replace.sh` 只把 compose 里的宿主机路径 `./nginx/` 换成 `./nginx-release/`，不再误改容器内的 `/etc/nginx/`
+
+commit message: `fix: replace.sh 只替换宿主机 nginx 目录`
+
 ## 2026-10-22 11:38:19
 
 - full 栈去掉 `nginx_php`：入口 Nginx 直接 FastCGI 到 `app_php:9000`，不再多一次 HTTP 反代，也不再发布 `8084`
