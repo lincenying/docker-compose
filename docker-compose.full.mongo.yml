@@ -55,6 +55,7 @@ services:
       API_URL: http://api:4000
     env_file:
       - .env
+      - .env.local
     depends_on:
       - api
     extra_hosts:
@@ -72,6 +73,7 @@ services:
       NUXT_ENV_API_URL: http://api:4000
     env_file:
       - .env
+      - .env.local
     depends_on:
       - api
     extra_hosts:
@@ -101,6 +103,7 @@ services:
       UPLOAD_TOKEN: ${UPLOAD_TOKEN:-}
     env_file:
       - .env
+      - .env.local
     volumes:
       - php-app:/home/web/app-php
       - ./config/php.ini:/usr/local/etc/php/php.ini:ro
