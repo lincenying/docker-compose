@@ -15,7 +15,7 @@ services:
     image: mysql:8.4
     command: --mysql-native-password=ON
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-database_name}
       MYSQL_USER: ${MYSQL_USER:-MYSQL_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}

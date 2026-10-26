@@ -4,7 +4,7 @@ services:
     image: mysql:8.4
     command: --mysql-native-password=ON
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-database_name}
       MYSQL_USER: ${MYSQL_USER:-MYSQL_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
@@ -29,7 +29,7 @@ services:
     environment:
       POSTGRES_HOST: 0.0.0.0
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-POSTGRES_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
       POSTGRES_DB: ${POSTGRES_DB:-database_name}
     extra_hosts:
@@ -40,7 +40,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-database_name}
+        - pg_isready -U ${POSTGRES_USER:-POSTGRES_user} -d ${POSTGRES_DB:-database_name}
       interval: 3s
       timeout: 5s
       retries: 20
@@ -61,7 +61,7 @@ services:
       NODE_ENV: production
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-POSTGRES_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-POSTGRES_password}
       POSTGRES_DB: ${POSTGRES_DB:-database_name}
       PORT: 4000

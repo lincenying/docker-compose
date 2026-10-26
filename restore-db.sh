@@ -153,7 +153,7 @@ restore_mysql() {
   require_container "$MYSQL_CONTAINER" "./dc.sh up full.postgres 或 ./dc.sh up full.mongo"
   prefer_container_env "$MYSQL_CONTAINER" MYSQL_ROOT_PASSWORD
   prefer_container_env "$MYSQL_CONTAINER" MYSQL_DATABASE
-  : "${MYSQL_ROOT_PASSWORD:=rootpassword}"
+  : "${MYSQL_ROOT_PASSWORD:=root_password}"
   : "${MYSQL_DATABASE:=database_name}"
   assert_ident "$MYSQL_DATABASE" "MySQL 数据库名"
   wait_mysql
@@ -175,7 +175,7 @@ restore_postgres() {
   prefer_container_env "$POSTGRES_CONTAINER" POSTGRES_USER
   prefer_container_env "$POSTGRES_CONTAINER" POSTGRES_PASSWORD
   prefer_container_env "$POSTGRES_CONTAINER" POSTGRES_DB
-  : "${POSTGRES_USER:=postgres}"
+  : "${POSTGRES_USER:=POSTGRES_user}"
   : "${POSTGRES_PASSWORD:=POSTGRES_password}"
   : "${POSTGRES_DB:=database_name}"
   assert_ident "$POSTGRES_USER" "PostgreSQL 用户名"

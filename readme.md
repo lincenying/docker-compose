@@ -86,10 +86,10 @@ POSTGRES_DIR=postgresql数据库路径
 POSTGRES_HOST=POSTGRES主机地址,默认值:postgres
 POSTGRES_PORT=POSTGRES主机端口,默认值:5432
 POSTGRES_DB=POSTGRES数据库名,默认值:database_name
-POSTGRES_USER=POSTGRES数据库用户名,默认值:postgres
+POSTGRES_USER=POSTGRES数据库用户名,默认值:POSTGRES_user
 POSTGRES_PASSWORD=POSTGRES密码,默认值:POSTGRES_password
 
-MYSQL_ROOT_PASSWORD=mysqlroot密码,默认值:rootpassword
+MYSQL_ROOT_PASSWORD=mysqlroot密码,默认值:root_password
 MYSQL_DATABASE=mysql数据库名,默认值:database_name
 MYSQL_USER=mysql数据库用户名,默认值:MYSQL_user
 MYSQL_PASSWORD=mysql数据库密码,默认值:MYSQL_password
@@ -104,8 +104,8 @@ UPLOAD_TOKEN=本地上传接口的token
 `POSTGRES_HOST` `POSTGRES_PORT` `POSTGRES_DB` `POSTGRES_USER` `POSTGRES_PASSWORD`
 `MYSQL_ROOT_PASSWORD` `MYSQL_DATABASE` `MYSQL_USER` `MYSQL_PASSWORD`
 未设置时, 默认值分别是:
-`postgres`, `5432`, `database_name`, `postgres`, `POSTGRES_password`,
-`rootpassword`, `database_name`, `MYSQL_user`, `MYSQL_password`
+`postgres`, `5432`, `database_name`, `POSTGRES_user`, `POSTGRES_password`,
+`root_password`, `database_name`, `MYSQL_user`, `MYSQL_password`
 
 ## 开启 PHP 项目
 
@@ -114,7 +114,7 @@ UPLOAD_TOKEN=本地上传接口的token
 在 `.env.local` 中设置 `MYSQL_DIR` 与 `MYSQL_*`。`mysql` 与 `app-php` 共用：
 
 ```bash
-MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_ROOT_PASSWORD=root_password
 MYSQL_DATABASE=database_name
 MYSQL_USER=MYSQL_user
 MYSQL_PASSWORD=MYSQL_password
