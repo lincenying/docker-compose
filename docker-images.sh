@@ -122,9 +122,10 @@ mirror_image() {
   case "$1" in
     crazymax/fail2ban:1) echo "crazymax/fail2ban:1.1.0" ;;
     mysql:8.0) echo "mysql:8.0.46" ;;
+    mysql:8.4) echo "mysql:8.4.13" ;;
     postgres:18-alpine) echo "postgres:18.6-alpine3.24" ;;
-    nginx:alpine) echo "nginx:1.31.6-alpine3.24" ;;
-    nginx:latest) echo "nginx:1.31.6" ;;
+    nginx:alpine) echo "nginx:1.31.8-alpine3.24" ;;
+    nginx:latest) echo "nginx:1.31.8" ;;
     *) echo "$1" ;;
   esac
 }
