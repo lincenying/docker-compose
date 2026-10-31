@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # 按 stack 从华为云镜像源拉取 compose 所需镜像，并打成配置里使用的本地标签
-# 兼容 macOS 自带 Bash 3.2
+# 兼容 macOS 自带 Bash 3.2。Ubuntu 的 sh 是 dash，不支持 pipefail，用 sh 调用时转交 bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

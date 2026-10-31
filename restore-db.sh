@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # 将 web/sql/mysql.sql、web/sql/postgre.sql 恢复到对应数据库容器
-# 兼容 macOS 自带 Bash 3.2
+# 兼容 macOS 自带 Bash 3.2。Ubuntu 的 sh 是 dash，不支持 pipefail，用 sh 调用时转交 bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

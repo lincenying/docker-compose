@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # 统一启动脚本：兼容 5 个 docker-compose 配置，并加载 .env + .env.local
-# 兼容 macOS 自带 Bash 3.2
+# 兼容 macOS 自带 Bash 3.2。Ubuntu 的 sh 是 dash，不支持 pipefail，用 sh 调用时转交 bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
