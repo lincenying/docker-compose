@@ -123,7 +123,7 @@ normalize_ref() {
 # 镜像源上的仓库:tag。浮动标签换成已验证可拉取的具体版本，再 tag 回 compose 使用的名字。
 mirror_image() {
   case "$1" in
-    crazymax/fail2ban:1) echo "crazymax/fail2ban:1.1.0" ;;
+    crazymax/fail2ban:1) echo "crazymax/fail2ban:1.1.1" ;;
     mysql:8.0) echo "mysql:8.0.46" ;;
     mysql:8.4) echo "mysql:8.4.13" ;;
     postgres:18-alpine) echo "postgres:18.6-alpine3.24" ;;
