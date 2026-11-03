@@ -13,7 +13,7 @@ commit message: `fix: replace.sh 只替换宿主机 nginx 目录`
 ## 2026-10-22 11:38:19
 
 - full 栈去掉 `nginx_php`：入口 Nginx 直接 FastCGI 到 `app_php:9000`，不再多一次 HTTP 反代，也不再发布 `8084`
-- `app_php` 与入口 Nginx 共用卷 `php-app` 提供站点文件；上传目录仍挂 `./php-update`，Nginx 只读
+- `app_php` 与入口 Nginx 共用卷 `php-app` 提供站点文件；上传目录仍挂 `./php-uploads`，Nginx 只读
 - PHP 镜像把代码放在 `/opt/app-php`，启动时同步到运行目录，避免共享卷一直用第一次拷进去的旧代码
 
 commit message: `perf: 入口 Nginx 直接连接 PHP-FPM`
