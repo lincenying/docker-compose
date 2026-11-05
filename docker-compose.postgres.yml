@@ -104,7 +104,7 @@ services:
     volumes:
       - ./nginx-local/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx-local/conf.d:/etc/nginx/conf.d
-      - ./nginx-local/conf.d/inc.alias/000-upstreams.conf:/etc/nginx/conf.d/inc/000-upstreams.conf
+      - ./nginx-local/conf.d/global.alias/000-upstreams.conf:/etc/nginx/conf.d/global/000-upstreams.conf
       - ./nginx-local/cert:/etc/nginx/cert
       - ./nginx-local/logs:/var/log/nginx
       - ./api-uploads:/app/uploads:ro
