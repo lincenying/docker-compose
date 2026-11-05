@@ -1,5 +1,5 @@
 # 公共反向代理参数（在 location 内 include）
-# include /etc/nginx/conf.d/proxy-params.inc;
+# include /etc/nginx/conf.d/inc/proxy-params.inc;
 #
 # 效率：HTTP/1.1 + 空 Connection 复用上游 keepalive；有 Upgrade 时自动切 WebSocket
 # 安全：X-Real-IP / X-Forwarded-For 使用 real_ip 还原后的 $remote_addr（见 000-real-ip.conf），

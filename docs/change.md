@@ -1,3 +1,17 @@
+## 2026-11-05 10:41:51
+
+- `nginx/conf.d` 与 `conf.d.alias` 同样把 `.inc` 和 `000-` 公共配置移入各自的 `inc` 目录，站点 server 配置仍留在原目录
+- `nginx/nginx.conf` 先加载 `inc/*.conf`，站点与 `conf.d.php` 的 include 路径改为 `/etc/nginx/conf.d/inc/`
+
+commit message: `refactor: 开发环境 Nginx 公共片段收进 inc 目录`
+
+## 2026-11-05 10:39:41
+
+- `nginx-release/conf.d` 与 `conf.d.alias` 的 `.inc` 和 `000-` 公共配置移入各自的 `inc` 目录，站点 server 配置仍留在原目录
+- `nginx-release/nginx.conf` 先加载 `inc/*.conf`，站点里的 include 路径改为 `/etc/nginx/conf.d/inc/`
+
+commit message: `refactor: Nginx 公共片段收进 inc 目录`
+
 ## 2026-10-28 10:53:45
 
 - `nginx/nginx.conf` 与 `nginx-release/nginx.conf` 按扩展名跳过静态资源的 access 日志，页面、接口和扫描路径仍写入 `access.log`
