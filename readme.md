@@ -138,7 +138,7 @@ MYSQL_PASSWORD=MYSQL_password
 
 - `nginx/conf.d`：站点与公共片段的唯一完整副本。仅起 Nginx 时反代 `host.docker.internal`。
 - `nginx/conf.d.alias`：只保留与 `conf.d` 不同的覆盖文件。Mongo / Postgres 栈挂上 `inc/000-upstreams.conf`（compose 服务名）。`py.test.com` 写在宿主机那份上游文件里，覆盖后不会在 alias 栈出现。
-- `nginx/conf.d.php`：PHP 站点配置。`full*` 再把 `php.alias.conf` 和 `conf.d.alias/inc/php-locations.inc` 叠加到 `conf.d` 上。
+- `nginx/conf.d.php`：PHP 站点配置。`full*` 再把 `php.alias.conf` 和 `conf.d/inc.alias/php-locations.inc` 叠加到 `conf.d` 上。
 - 反代公共参数：`conf.d/inc/proxy-params.inc`；上游连接池：`inc/000-upstreams.conf`（`upstream_api` / `upstream_nuxt` / `upstream_app` / `upstream_python`）。full 栈的 PHP 由 `conf.d.php/php.alias.conf` 直接 FastCGI 到 `app_php`，站点文件与 PHP 容器共用卷 `php-app`。单独跑 Nginx 时仍用 `conf.d.php/php.conf` 反代到宿主机 `8084`。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。
