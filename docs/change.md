@@ -1,3 +1,16 @@
+## 2026-11-05 11:05:00
+
+- `py.test.com` / `py.mmxiaowu.com` 改到宿主机版 `inc/000-upstreams.conf`，并删除 `conf.d/python.conf`。alias 栈覆盖上游文件后不再引用不存在的 `upstream_python`
+
+commit message: `fix: alias 栈不再加载缺失的 Python 上游`
+
+## 2026-11-05 10:51:34
+
+- `nginx` 与 `nginx-release` 的 `conf.d.alias` 只保留上游、PHP location 和 `python.conf` 占位，站点配置统一以 `conf.d` 为准
+- Mongo / Postgres / full 栈改为挂载 `conf.d`，再用 `conf.d.alias` 里的差异文件覆盖
+
+commit message: `refactor: Nginx 站点配置只保留一份`
+
 ## 2026-11-05 10:41:51
 
 - `nginx/conf.d` 与 `conf.d.alias` 同样把 `.inc` 和 `000-` 公共配置移入各自的 `inc` 目录，站点 server 配置仍留在原目录

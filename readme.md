@@ -7,12 +7,12 @@
 | Compose 文件 | Nginx 配置目录 | 数据库 | 适用场景 |
 |---|---|---|---|
 | `docker-compose.yml` | `nginx/conf.d`（反代宿主机端口） | 无 | 仅启动 Nginx；后端需已在宿主机运行 |
-| `docker-compose.mongo.yml` | `nginx/conf.d.alias` | Mongo | 生产：API + Vue/Nuxt（无 PHP） |
-| `docker-compose.full.mongo.yml` | `nginx/conf.d.alias` | Mongo + MySQL | 全栈：上者 + PHP |
-| `docker-compose.postgres.yml` | `nginx/conf.d.alias` | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
-| `docker-compose.full.postgres.yml` | `nginx/conf.d.alias` | Postgres + MySQL | Postgres 栈 + PHP |
+| `docker-compose.mongo.yml` | `nginx/conf.d`，上游用 `conf.d.alias` 覆盖 | Mongo | 生产：API + Vue/Nuxt（无 PHP） |
+| `docker-compose.full.mongo.yml` | 同上，再覆盖 PHP 配置 | Mongo + MySQL | 全栈：上者 + PHP |
+| `docker-compose.postgres.yml` | `nginx/conf.d`，上游用 `conf.d.alias` 覆盖 | Postgres | Postgres API + Vue/Nuxt（无 PHP） |
+| `docker-compose.full.postgres.yml` | 同上，再覆盖 PHP 配置 | Postgres + MySQL | Postgres 栈 + PHP |
 
-> Docker Desktop（virtiofs）下：若目录挂载后再叠加单文件挂载，目标文件必须已存在于宿主机目录，否则会报 `mountpoint is outside of rootfs`。`full.mongo` / `full.postgres` 的 PHP 叠加挂载依赖 `php.conf` / `demo-h5.conf` / `demo-uniapp.conf` 占位文件。
+> Docker Desktop（virtiofs）下：若目录挂载后再叠加单文件挂载，目标文件必须已存在于宿主机目录，否则会报 `mountpoint is outside of rootfs`。因此 `conf.d` 里保留 `php.conf`、`inc/php-locations.inc` 等占位文件，供 full 栈覆盖。
 
 ## 启动命令
 
@@ -136,11 +136,10 @@ MYSQL_PASSWORD=MYSQL_password
 
 ## Nginx 配置说明
 
-- `nginx/conf.d`：反代 `host.docker.internal`（适合仅起 Nginx、后端在宿主机）。
-- `nginx/conf.d.alias`：反代 Docker 服务名（Mongo/Express 栈）。
-- `nginx/conf.d.alias`：反代 Docker 服务名（Postgres 栈）。
-- `nginx/conf.d.php`：PHP 相关站点配置；`full*` 通过文件挂载叠加到上述 alias 目录。
-- 反代公共参数：`inc/proxy-params.inc`；上游连接池：`inc/000-upstreams.conf`（`upstream_api` / `upstream_nuxt` / `upstream_app` / `upstream_python`）。full 栈的 PHP 由 `conf.d.php/php.alias.conf` 直接 FastCGI 到 `app_php`，站点文件与 PHP 容器共用卷 `php-app`。单独跑 Nginx 时仍用 `conf.d.php/php.conf` 反代到宿主机 `8084`。
+- `nginx/conf.d`：站点与公共片段的唯一完整副本。仅起 Nginx 时反代 `host.docker.internal`。
+- `nginx/conf.d.alias`：只保留与 `conf.d` 不同的覆盖文件。Mongo / Postgres 栈挂上 `inc/000-upstreams.conf`（compose 服务名）。`py.test.com` 写在宿主机那份上游文件里，覆盖后不会在 alias 栈出现。
+- `nginx/conf.d.php`：PHP 站点配置。`full*` 再把 `php.alias.conf` 和 `conf.d.alias/inc/php-locations.inc` 叠加到 `conf.d` 上。
+- 反代公共参数：`conf.d/inc/proxy-params.inc`；上游连接池：`inc/000-upstreams.conf`（`upstream_api` / `upstream_nuxt` / `upstream_app` / `upstream_python`）。full 栈的 PHP 由 `conf.d.php/php.alias.conf` 直接 FastCGI 到 `app_php`，站点文件与 PHP 容器共用卷 `php-app`。单独跑 Nginx 时仍用 `conf.d.php/php.conf` 反代到宿主机 `8084`。
 
 证书放在 `nginx/cert`；当前各站点的 `listen 443 ssl` 仍为注释状态。
 
@@ -148,7 +147,7 @@ MYSQL_PASSWORD=MYSQL_password
 
 各 compose（含仅 Nginx）均为 Nginx 启用双层防护：
 
-1. **Nginx 应用层**：`conf.d/inc` 与 `conf.d.alias/inc` 中的 `000-security-http.conf` + `anti-scan.inc` 拦截常见扫描路径/恶意 UA，并做请求限流；手工黑名单见 `inc/000-blocked-ips.conf`。
+1. **Nginx 应用层**：`conf.d/inc` 中的 `000-security-http.conf` + `anti-scan.inc` 拦截常见扫描路径/恶意 UA，并做请求限流；手工黑名单见 `inc/000-blocked-ips.conf`。
 2. **fail2ban**：`dc-fail2ban` 与 `dc-nginx` 共享网络命名空间，根据访问日志用 iptables 封禁扫描 IP；规则在 `fail2ban/`。
 
 查看封禁：`docker exec dc-fail2ban fail2ban-client status nginx-scanner`
