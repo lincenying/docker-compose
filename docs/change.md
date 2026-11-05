@@ -1,3 +1,10 @@
+## 2026-11-05 15:42:00
+
+- `nginx-local` 与 `nginx-release` 的 API 站点用 `/uploads/` 直接读取 `/app/uploads`
+- Nginx 容器只读挂载 `./api-uploads`，与 API 容器共用同一目录
+
+commit message: `feat: API 站点通过 /uploads 提供上传文件`
+
 ## 2026-11-05 11:05:00
 
 - `py.test.com` / `py.mmxiaowu.com` 改到宿主机版 `inc/000-upstreams.conf`，并删除 `conf.d/python.conf`。alias 栈覆盖上游文件后不再引用不存在的 `upstream_python`

@@ -107,6 +107,7 @@ services:
       - ./nginx-local/conf.d/inc.alias/000-upstreams.conf:/etc/nginx/conf.d/inc/000-upstreams.conf
       - ./nginx-local/cert:/etc/nginx/cert
       - ./nginx-local/logs:/var/log/nginx
+      - ./api-uploads:/app/uploads:ro
       - ./web:/home/web
     networks:
       - webnet

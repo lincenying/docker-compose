@@ -140,6 +140,7 @@ services:
       - ./nginx-local/conf.d/inc.alias/php-locations.inc:/etc/nginx/conf.d/inc/php-locations.inc
       - ./nginx-local/cert:/etc/nginx/cert
       - ./nginx-local/logs:/var/log/nginx
+      - ./api-uploads:/app/uploads:ro
       - ./web:/home/web
       - php-app:/home/web/app-php:ro
       - ./php-uploads:/home/web/app-php/upload:ro
