@@ -33,7 +33,7 @@ commit message: `chore: 静态资源不再写入 Nginx access 日志`
 
 ## 2026-10-22 14:28:31
 
-- `replace.sh` 只把 compose 里的宿主机路径 `./nginx/` 换成 `./nginx-release/`，不再误改容器内的 `/etc/nginx/`
+- `replace.sh` 只把 compose 里的宿主机路径 `./nginx-local/` 换成 `./nginx-release/`，不再误改容器内的 `/etc/nginx/`
 
 commit message: `fix: replace.sh 只替换宿主机 nginx 目录`
 
