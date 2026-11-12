@@ -29,6 +29,7 @@
 ./dc.sh down full.postgres
 ./dc.sh logs postgres
 ./dc.sh ps full.mongo
+./dc.sh up full-pg -d api
 ```
 
 也可直接使用 docker compose（需自行带上 env 文件）：
@@ -150,4 +151,8 @@ MYSQL_PASSWORD=MYSQL_password
 1. **Nginx 应用层**：`conf.d/inc` 中的 `000-security-http.conf` + `anti-scan.inc` 拦截常见扫描路径/恶意 UA，并做请求限流；手工黑名单见 `inc/000-blocked-ips.conf`。
 2. **fail2ban**：`dc-fail2ban` 与 `dc-nginx` 共享网络命名空间，根据访问日志用 iptables 封禁扫描 IP；规则在 `fail2ban/`。
 
-查看封禁：`docker exec dc-fail2ban fail2ban-client status nginx-scanner`
+查看封禁：
+
+`docker exec dc-fail2ban fail2ban-client status nginx-scanner`
+`docker exec dc-fail2ban fail2ban-client status nginx-404`
+`docker exec dc-fail2ban fail2ban-client status nginx-limit-req`
