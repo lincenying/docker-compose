@@ -1,3 +1,10 @@
+## 2026-11-19 15:06:11
+
+- `nginx-release/nginx.conf` 的 `log_format main` 在时间后增加 `$host`，同一份 access.log 可按域名区分站点
+- 客户端 IP 仍在行首，状态码仍紧跟请求行，fail2ban 过滤规则不用改
+
+commit message: `chore: Nginx 访问日志增加 Host 以区分站点`
+
 ## 2026-11-05 15:42:00
 
 - `nginx-local` 与 `nginx-release` 的 API 站点用 `/uploads/` 直接读取 `/app/uploads`
