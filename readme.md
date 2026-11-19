@@ -153,6 +153,8 @@ MYSQL_PASSWORD=MYSQL_password
 
 查看封禁：
 
-`docker exec dc-fail2ban fail2ban-client status nginx-scanner`
-`docker exec dc-fail2ban fail2ban-client status nginx-404`
-`docker exec dc-fail2ban fail2ban-client status nginx-limit-req`
+```bash
+docker exec dc-fail2ban fail2ban-client status nginx-scanner
+docker exec dc-fail2ban fail2ban-client status nginx-404
+docker exec dc-fail2ban fail2ban-client status nginx-limit-req
+```
