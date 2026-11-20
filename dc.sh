@@ -40,7 +40,8 @@ Stack 别名:
   ./dc.sh down mongo
   ./dc.sh logs postgres
   ./dc.sh restart full-pg api
-  ./dc.sh up full-pg -d api nginx      # 启动/重启 full-pg 并后台运行 api 和 nginx 容器, 会重新读取版本号
+  ./dc.sh up full-pg -d api nginx      # 只强制重建点名的 api、nginx，并重新读取版本号
+  ./dc.sh up full-pg -d nginx          # 只重建 nginx；已在跑的依赖不会跟着换容器
   ./dc.sh                        # 交互菜单
 EOF
 }
@@ -175,6 +176,98 @@ pick_stack_interactive() {
   exit 1
 }
 
+compose_has_service() {
+  local file="$1"
+  local name="$2"
+  grep -q "^  ${name}:" "$file"
+}
+
+list_has() {
+  local needle="$1"
+  shift
+  local item
+  for item in "$@"; do
+    if [ "$item" = "$needle" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# 点名服务时：已有依赖不重建；点名的服务强制重建。
+# nginx 与 fail2ban 共用网络命名空间，重建 nginx 前必须先停掉 fail2ban。
+up_services() {
+  local file="$1"
+  shift
+
+  local flags=()
+  local services=()
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      -*) flags+=("$arg") ;;
+      *) services+=("$arg") ;;
+    esac
+  done
+
+  if [ "${#services[@]}" -eq 0 ]; then
+    if [ "$#" -eq 0 ]; then
+      run_compose "$file" up -d
+    else
+      run_compose "$file" up "$@"
+    fi
+    return 0
+  fi
+
+  local skip_deps=0
+  local has_detach=0
+  if [ "${#flags[@]}" -gt 0 ]; then
+    for arg in "${flags[@]}"; do
+      case "$arg" in
+        --no-deps) skip_deps=1 ;;
+        -d|--detach) has_detach=1 ;;
+      esac
+    done
+  fi
+
+  if [ "$skip_deps" -eq 0 ]; then
+    run_compose "$file" up -d --no-recreate "${services[@]}"
+  fi
+
+  local stop_fail2ban=0
+  if list_has nginx "${services[@]}" && compose_has_service "$file" fail2ban; then
+    run_compose "$file" stop fail2ban || true
+    stop_fail2ban=1
+  fi
+
+  local cmd=(up --force-recreate --no-deps)
+  if [ "$has_detach" -eq 1 ]; then
+    cmd+=(-d)
+  fi
+  if [ "${#flags[@]}" -gt 0 ]; then
+    for arg in "${flags[@]}"; do
+      case "$arg" in
+        -d|--detach|--force-recreate|--no-deps|--no-recreate) ;;
+        *) cmd+=("$arg") ;;
+      esac
+    done
+  fi
+  for arg in "${services[@]}"; do
+    cmd+=("$arg")
+  done
+
+  if ! run_compose "$file" "${cmd[@]}"; then
+    if [ "$stop_fail2ban" -eq 1 ]; then
+      run_compose "$file" up -d --no-deps fail2ban || true
+    fi
+    exit 1
+  fi
+
+  if [ "$stop_fail2ban" -eq 1 ]; then
+    run_compose "$file" up -d --force-recreate --no-deps fail2ban
+  fi
+}
+
 pick_command_interactive() {
   # 结果写入 PICKED_CMD；选 q 时 exit（必须在主 shell 调用，勿用 $()）
   echo
@@ -261,11 +354,7 @@ main() {
 
   case "$cmd" in
     up)
-      if [ "$#" -eq 0 ]; then
-        run_compose "$file" up -d
-      else
-        run_compose "$file" up "$@"
-      fi
+      up_services "$file" "$@"
       ;;
     down)
       run_compose "$file" down "$@"

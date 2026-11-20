@@ -1,3 +1,10 @@
+## 2026-11-20 10:48:17
+
+- `./dc.sh up <stack> -d <服务>` 只强制重建点名的服务，已在跑的依赖不再跟着重建
+- 重建 `nginx` 前先停止共用网络命名空间的 `fail2ban`，完成后再拉起
+
+commit message: `fix: 点名启动时只重建指定容器`
+
 ## 2026-11-19 15:06:11
 
 - `nginx-release/nginx.conf` 的 `log_format main` 在时间后增加 `$host`，同一份 access.log 可按域名区分站点
