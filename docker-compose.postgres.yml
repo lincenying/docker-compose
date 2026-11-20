@@ -22,7 +22,7 @@ services:
       retries: 20
       start_period: 10s
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     networks:
       - webnet
     restart: unless-stopped
@@ -32,6 +32,7 @@ services:
     image: lincenying/api-bun-postgre:${API_POSTGRES_TAG}
     env_file:
       - .env
+      - .env.local
     environment:
       NODE_ENV: production
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -95,9 +96,12 @@ services:
     container_name: dc-nginx
     image: nginx:alpine
     depends_on:
-      - api
-      - app
-      - nuxt
+      api:
+        condition: service_started
+      app:
+        condition: service_started
+      nuxt:
+        condition: service_started
     ports:
       - "80:80"
       - "443:443"

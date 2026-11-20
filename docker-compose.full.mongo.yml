@@ -20,7 +20,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-MYSQL_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-MYSQL_password}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - ./web/sql:/app/mysql
       - ${MYSQL_DIR:-./data/mysqldb}:/var/lib/mysql
