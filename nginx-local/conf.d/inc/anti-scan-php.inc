@@ -1,6 +1,10 @@
 # PHP 站点专用：不拦截 .php（否则业务不可用），其余扫描规则与限流仍生效
 # include /etc/nginx/conf.d/inc/anti-scan-php.inc;
 
+if ($is_raw_ip_host) {
+    return 444;
+}
+
 if ($is_scanner_uri) {
     return 444;
 }

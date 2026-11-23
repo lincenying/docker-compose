@@ -1,3 +1,11 @@
+## 2026-11-23 10:05:54
+
+- 用 IP 当 Host 的扫描会直接 444；生产环境 443 增加 default server，对不上域名的 TLS 握手直接拒绝，不再落到 API 站点
+- 补充这批日志里的设备指纹路径：onvif、redfish、ocpp、RPC2、tplus、System/Ping、/svn/、login.html 等
+- fail2ban 同步上述路径，并封禁裸 IP Host，以及 80 端口上的 TLS/Redis/Mongo/SMB/MySQL/PostgreSQL 探测
+
+commit message: `fix: 拦截按 IP 扫描的设备指纹探测`
+
 ## 2026-11-20 16:40:40
 
 - MySQL、PostgreSQL 的宿主机端口改为只绑定 `127.0.0.1`，局域网和外网无法直连

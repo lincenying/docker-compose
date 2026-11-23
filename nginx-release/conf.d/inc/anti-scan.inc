@@ -1,6 +1,10 @@
 # 在 server 块内 include：拦截扫描并限流
 # include /etc/nginx/conf.d/inc/anti-scan.inc;
 
+if ($is_raw_ip_host) {
+    return 444;
+}
+
 if ($is_scanner_uri) {
     return 444;
 }
