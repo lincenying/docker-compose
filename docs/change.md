@@ -1,3 +1,10 @@
+## 2026-11-26 10:32:26
+
+- 空 UA 刷 `www.mmxiaowu.com/robots.txt` 会被 Nginx 以 444 拒绝，但 Host 是正常域名，原先不计入 fail2ban
+- `nginx-scanner` 增加状态码 444 规则，60 秒内 5 次即封禁 24 小时
+
+commit message: `fix: 将 Nginx 444 拒绝计入 fail2ban 封禁`
+
 ## 2026-11-25 17:29:19
 
 - fail2ban 匹配前会去掉时间戳，`[时间]` 变成 `[]`；裸 IP 与非 HTTP 探测规则里的 `\[[^\]]+\]` 要求括号内至少有一个字符，因此这两条从未命中
